@@ -1,0 +1,14 @@
+*.o
+/poemy
+/.deps
+/Makefile
+/Makefile.in
+/aclocal.m4
+/autom4te.cache
+/config.*
+/config/config.*
+/config/depcomp
+/config/install-sh
+/config/missing
+/configure
+/stamp-h1

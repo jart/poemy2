@@ -1,0 +1,25 @@
+# -*- Autoconf -*-
+
+AC_PREREQ(2.61)
+AC_INIT([poemy], [0.1], [jtunney@gmail.com])
+
+AC_CONFIG_AUX_DIR(config)
+AC_CONFIG_MACRO_DIR(config)
+AM_INIT_AUTOMAKE([foreign])
+AC_CONFIG_SRCDIR([src/main.cc])
+AM_CONFIG_HEADER([config.h])
+dnl m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
+AC_CANONICAL_BUILD
+AC_CANONICAL_HOST
+PKG_PROG_PKG_CONFIG([0.22])
+
+AC_LANG(C++)
+AC_PROG_CXX
+AX_CXX_COMPILE_STDCXX_11
+
+PKG_CHECK_MODULES(LIBSPARSEHASH, libsparsehash)
+
+AC_CONFIG_SUBDIRS([gtest-1.6.0])
+
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT
