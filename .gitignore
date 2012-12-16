@@ -1,5 +1,6 @@
 *.o
 /poemy
+
 /.deps
 /Makefile
 /Makefile.in
@@ -12,3 +13,10 @@
 /config/missing
 /configure
 /stamp-h1
+
+/gtest-1.6.0/autom4te.cache
+/gtest-1.6.0/build-aux
+/gtest-1.6.0/Makefile.in
+/gtest-1.6.0/aclocal.m4
+/gtest-1.6.0/build-aux
+/gtest-1.6.0/configure
