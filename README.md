@@ -1,7 +1,8 @@
 # poemy - A poetry generator
 
-Poemy is a poetry generator written in C++11 that uses markov chains and
-speech dictionaries to write poetry in any meter or rhyming scheme.
+Poemy is a poetry generator written in C++11 with Googley libraries that uses
+markov chains and speech dictionaries to write poetry in any meter or rhyming
+scheme.
 
 ## Installation
 

@@ -56,8 +56,8 @@ bool is_rhyme(const vector<vector<Syllable> >& prons1,
   return false;
 }
 
-void mkword(const string word1,
-            const string word2,
+void mkword(const string& word1,
+            const string& word2,
             size_t pos,
             const vector<int>& meter,
             const vector<vector<Syllable> >& rhyme,
