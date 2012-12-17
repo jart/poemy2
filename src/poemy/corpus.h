@@ -8,12 +8,12 @@
 
 class Corpus {
  public:
-  explicit Corpus(std::ifstream* fs) : fs_(fs) {}
-  bool good() { return fs_->good(); }
+  explicit Corpus(std::istream* input) : input_(input) {}
+  bool good() { return input_->good(); }
   void operator>>(string& out);
 
  private:
-  std::ifstream* fs_;
+  std::istream* input_;
 
   DISALLOW_COPY_AND_ASSIGN(Corpus);
 };

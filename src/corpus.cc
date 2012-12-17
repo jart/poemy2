@@ -10,7 +10,7 @@ void Corpus::operator>>(string& out) {
   out = "";
   bool begin = true;
   char ch;
-  while (fs_->get(ch).good()) {
+  while (input_->get(ch).good()) {
     if (ch >= 'A' && ch <= 'Z') {
       ch += 'a' - 'A';
     }
@@ -26,7 +26,7 @@ void Corpus::operator>>(string& out) {
         out += ch;
       } else {
         if (ch == '.' || ch == '\n') {
-          fs_->unget();
+          input_->unget();
         }
         return;
       }

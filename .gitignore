@@ -1,6 +1,7 @@
 *.o
 
 /libgtest.a
+/libpoemy.a
 /poemy
 /test_*
 

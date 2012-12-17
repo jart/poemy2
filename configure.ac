@@ -1,4 +1,6 @@
 # -*- Autoconf -*-
+# poemy - A poetry generator
+# Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
 AC_PREREQ(2.61)
 AC_INIT([poemy], [0.1], [jtunney@gmail.com])
@@ -8,7 +10,7 @@ AC_CONFIG_MACRO_DIR(config)
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_SRCDIR([src/main.cc])
 AM_CONFIG_HEADER([config.h])
-dnl ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
+ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 PKG_PROG_PKG_CONFIG([0.22])

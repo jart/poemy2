@@ -1,8 +1,8 @@
 // poemy - A poetry generator
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
-#ifndef POEMY_H_
-#define POEMY_H_
+#ifndef POEMY_POEMY_H_
+#define POEMY_POEMY_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -47,7 +47,7 @@ using std::vector;
   TypeName(const TypeName&);               \
   void operator=(const TypeName&)
 
-#endif  // POEMY_H_
+#endif  // POEMY_POEMY_H_
 
 // For Emacs:
 // Local Variables:
