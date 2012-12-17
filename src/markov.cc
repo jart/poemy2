@@ -1,10 +1,10 @@
 // poemy - A poetry generator
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
-#include "poemy.h"
-#include "util.h"
-#include "corpus.h"
-#include "markov.h"
+#include "poemy/poemy.h"
+#include "poemy/util.h"
+#include "poemy/corpus.h"
+#include "poemy/markov.h"
 
 static const char kDelimiter = ',';
 
@@ -24,14 +24,15 @@ void Markov::Init() {
   keys_.clear();
   keys_.reserve(chain_.size());
   for (auto& pair : chain_) {
-    // remove_duplicates_from_stringlist(pair.second, kDelimiter);
-    std::unique(pair.second.begin(), pair.second.end());
+    // remove_duplicates_from_stringlist(kDelimiter, &pair.second);
+    std::unique(std::begin(pair.second), std::end(pair.second));
     keys_.push_back(pair.first);
   }
 }
 
 void Markov::LoadCorpus(const string& path) {
-  Corpus corp(path);
+  std::ifstream fs(path);
+  Corpus corp(&fs);
   string w1, w2;
   while (corp.good()) {
     corp >> w1;
@@ -58,18 +59,18 @@ void Markov::LoadCorpus(const string& path) {
   }
 }
 
-void Markov::PickFirst(string& word1, string& word2) {
+void Markov::PickFirst(string* o_word1, string* o_word2) {
   const string& key = keys_[rand_() % keys_.size()];
   const int i = key.find(kDelimiter);
-  word1 = key.substr(0, i);
-  word2 = key.substr(i + 1, key.length() - (i + 1));
+  *o_word1 = key.substr(0, i);
+  *o_word2 = key.substr(i + 1, key.length() - (i + 1));
 }
 
 const vector<string>&
 Markov::Picks(const string& word1, const string& word2) {
   const string key = word1 + kDelimiter + word2;
   vector<string>& choices = chain_[key];
-  // std::random_shuffle(choices.begin(), choices.end());
+  // std::random_shuffle(std::begin(choices), std::end(choices));
   return choices;
 }
 

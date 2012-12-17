@@ -1,15 +1,18 @@
 // poemy - A poetry generator
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
-#ifndef POEMY_MARKOV_H
-#define POEMY_MARKOV_H
+#ifndef POEMY_MARKOV_H_
+#define POEMY_MARKOV_H_
+
+#include <string>
+#include <vector>
 
 class Markov {
  public:
   explicit Markov(const string& corpora_path = "corpora");
   void Load(const string& corpus);
   void Init();
-  void PickFirst(string& word1, string& word2);
+  void PickFirst(string* o_word1, string* o_word2);
   const vector<string>& Picks(const string& word1, const string& word2);
 
  private:
@@ -23,7 +26,7 @@ class Markov {
   DISALLOW_COPY_AND_ASSIGN(Markov);
 };
 
-#endif // POEMY_MARKOV_H
+#endif  // POEMY_MARKOV_H_
 
 // For Emacs:
 // Local Variables:

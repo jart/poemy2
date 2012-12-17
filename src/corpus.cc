@@ -1,8 +1,8 @@
 // poemy - A poetry generator
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
-#include "poemy.h"
-#include "corpus.h"
+#include "poemy/poemy.h"
+#include "poemy/corpus.h"
 
 // Emits one word from the corpus or empty string if at the end of sentence or
 // file. This routine trims out weird characters and lower-cases everything.
@@ -10,7 +10,7 @@ void Corpus::operator>>(string& out) {
   out = "";
   bool begin = true;
   char ch;
-  while (fs_.get(ch).good()) {
+  while (fs_->get(ch).good()) {
     if (ch >= 'A' && ch <= 'Z') {
       ch += 'a' - 'A';
     }
@@ -26,7 +26,7 @@ void Corpus::operator>>(string& out) {
         out += ch;
       } else {
         if (ch == '.' || ch == '\n') {
-          fs_.unget();
+          fs_->unget();
         }
         return;
       }

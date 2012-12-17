@@ -1,13 +1,13 @@
 // poemy - A poetry generator
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
-#include "poemy.h"
-#include "util.h"
-
 #include <dirent.h>
 #include <sys/types.h>
 
-vector<string> split(string& text, char delim) {
+#include "poemy/poemy.h"
+#include "poemy/util.h"
+
+vector<string> split(const string& text, char delim) {
   vector<string> res;
   std::stringstream ss(text);
   string item;
@@ -17,11 +17,11 @@ vector<string> split(string& text, char delim) {
   return res;
 }
 
-void remove_duplicates_from_stringlist(string& text, char delim) {
+void remove_duplicates_from_stringlist(char delim, string* o_text) {
   // Split the string, remove empty values, and store it in a set.
   dense_hash_set<string> set;
   set.set_empty_key("");
-  std::stringstream ss(text);
+  std::stringstream ss(*o_text);
   string item;
   while (std::getline(ss, item, delim)) {
     if (item != "") {
@@ -30,17 +30,17 @@ void remove_duplicates_from_stringlist(string& text, char delim) {
   }
 
   // Reassemble string from the set.
-  text = "";
+  *o_text = "";
   bool first = true;
   for (auto item : set) {
     if (first) {
       first = false;
     } else {
-      text += delim;
+      *o_text += delim;
     }
-    text += item;
+    *o_text += item;
   }
-  text.shrink_to_fit();
+  o_text->shrink_to_fit();
 }
 
 vector<string> list_dir(const string& path) {
@@ -64,6 +64,34 @@ vector<string> list_dir(const string& path) {
   }
   return res;
 }
+
+#ifdef HAVE_PROFILER
+
+void cpu_profiler_start() {
+  ProfilerStart("/tmp/cpu");
+}
+
+void cpu_profiler_stop() {
+  ProfilerStop();
+  if (!fork()) {
+    setsid();
+    close(0);
+    close(1);
+    close(2);
+    int rc = !(system("pprof --gif poemy /tmp/cpu >/tmp/cpu.gif") != 0 ||
+               system("eog /tmp/cpu.gif") != 0);
+    unlink("/tmp/cpu");
+    unlink("/tmp/cpu.gif");
+    exit(rc);
+  }
+}
+
+#else
+
+void cpu_profiler_start() {}
+void cpu_profiler_stop() {}
+
+#endif  // HAVE_PROFILER
 
 // For Emacs:
 // Local Variables:

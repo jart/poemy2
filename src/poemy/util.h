@@ -1,14 +1,19 @@
 // poemy - A poetry generator
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
-#ifndef POEMY_UTIL_H
-#define POEMY_UTIL_H
+#ifndef POEMY_UTIL_H_
+#define POEMY_UTIL_H_
 
-void remove_duplicates_from_stringlist(string& text, char delim);
+#include <string>
+#include <vector>
+
+void remove_duplicates_from_stringlist(char delim, string* o_text);
 vector<string> list_dir(const string& vector);
-vector<string> split(string& text, char delim);
+vector<string> split(const string& text, char delim);
+void cpu_profiler_start();
+void cpu_profiler_stop();
 
-#endif // POEMY_UTIL_H
+#endif  // POEMY_UTIL_H_
 
 // For Emacs:
 // Local Variables:

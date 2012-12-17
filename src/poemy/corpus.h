@@ -1,22 +1,24 @@
 // poemy - A poetry generator
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
-#ifndef POEMY_CORPUS_H
-#define POEMY_CORPUS_H
+#ifndef POEMY_CORPUS_H_
+#define POEMY_CORPUS_H_
+
+#include <string>
 
 class Corpus {
  public:
-  explicit Corpus(const string& path) : fs_(path) {}
-  bool good() { return fs_.good(); }
+  explicit Corpus(std::ifstream* fs) : fs_(fs) {}
+  bool good() { return fs_->good(); }
   void operator>>(string& out);
 
  private:
-  std::ifstream fs_;
+  std::ifstream* fs_;
 
   DISALLOW_COPY_AND_ASSIGN(Corpus);
 };
 
-#endif // POEMY_CORPUS_H
+#endif  // POEMY_CORPUS_H_
 
 // For Emacs:
 // Local Variables:

@@ -1,14 +1,17 @@
 // poemy - A poetry generator
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
-#include "poemy.h"
-#include "isledict.h"
-#include "markov.h"
+#include "poemy/poemy.h"
+#include "poemy/isledict.h"
+#include "poemy/markov.h"
+#include "poemy/util.h"
+
+DEFINE_int32(lines, 50, "How many lines of poetry to generate.");
+DEFINE_int32(tries, 100000, "How many times to crawl node before quitting.");
+DEFINE_string(corpora, "goth", "Comma-separated list of corpora to load.");
 
 Markov g_chain;
 Isledict g_dict;
-
-const int kTries = 100000;
 
 class Exhausted {};
 
@@ -100,13 +103,13 @@ void mkword(const string word1,
 
 vector<string>
 mkline(const vector<int>& meter, const vector<vector<Syllable> >& rhyme) {
-  for (int tries = 0; tries < kTries; ++tries) {
+  for (int tries = 0; tries < FLAGS_tries; ++tries) {
     size_t pos = 0;
     dense_hash_set<string> visited;
     visited.set_empty_key("");
     vector<std::pair<string, vector<Syllable> > > words;
     std::pair<string, vector<Syllable> > p1, p2;
-    g_chain.PickFirst(p1.first, p2.first);
+    g_chain.PickFirst(&p1.first, &p2.first);
     visited.insert(p1.first + "/" + p2.first);
     match_meter(g_dict[p1.first], meter, pos, p1.second);
     if (p1.second.empty()) {
@@ -123,7 +126,7 @@ mkline(const vector<int>& meter, const vector<vector<Syllable> >& rhyme) {
     try {
       mkword(p1.first, p2.first, pos, meter, rhyme, words, visited);
       vector<string> res;
-      for (auto& pair : words) {
+      for (const auto& pair : words) {
         res.push_back(pair.first);
       }
       return res;
@@ -133,13 +136,19 @@ mkline(const vector<int>& meter, const vector<vector<Syllable> >& rhyme) {
   throw Exhausted();
 }
 
-int main(int argc, char* argv[]) {
-  g_chain.Load("goth");
+int main(int argc, char** argv) {
+  google::SetUsageMessage(PACKAGE_NAME " [FLAGS]");
+  google::SetVersionString(VERSION);
+  google::ParseCommandLineFlags(&argc, &argv, true);
+  google::InitGoogleLogging(argv[0]);
+  google::InstallFailureSignalHandler();
+
+  g_chain.Load(FLAGS_corpora);
   g_chain.Init();
   g_dict.Load("data/isledict/isledict0.2.txt");
 
-  const vector<int> meter {0, 1, 0, 1, 0, 1, 0, 1, 0, 1};
-  for (;;) {
+  const vector<int> meter = {0, 1, 0, 1, 0, 1, 0, 1, 0, 1};
+  for (int n = 0; n < FLAGS_lines; ++n) {
     vector<vector<Syllable> > rhyme;
     vector<string> line = mkline(meter, rhyme);
     for (const auto& str : line) cout << str << " "; cout << endl;
@@ -158,6 +167,7 @@ int main(int argc, char* argv[]) {
   if (rc != 0) {
     exit(1);
   }
+
   return 0;
 }
 

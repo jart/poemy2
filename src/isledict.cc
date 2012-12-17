@@ -1,8 +1,8 @@
 // poemy - A poetry generator
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
-#include "poemy.h"
-#include "isledict.h"
+#include "poemy/poemy.h"
+#include "poemy/isledict.h"
 
 static Syllable parse_syllable(const string& prons, size_t& pos) {
   Syllable res;
@@ -68,9 +68,9 @@ Isledict::operator[](const string& word) {
 }
 
 void Isledict::Print(const vector<Syllable>& pron) {
-  for (auto& syl : pron) {
+  for (const auto& syl : pron) {
     cout << syl.stress << ": ";
-    for (auto lol : syl.phonemes) {
+    for (const auto& lol : syl.phonemes) {
       cout << lol << " ";
     }
     cout << endl;
@@ -78,9 +78,9 @@ void Isledict::Print(const vector<Syllable>& pron) {
 }
 
 void Isledict::Print(const vector<vector<Syllable> >& prons) {
-  for (auto& pron : prons) {
+  for (const auto& pron : prons) {
     cout << "----" << endl;
-    for (auto& syl : pron) {
+    for (const auto& syl : pron) {
       cout << syl.stress << ": ";
       for (auto lol : syl.phonemes) {
         cout << lol << " ";

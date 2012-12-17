@@ -1,8 +1,11 @@
 // poemy - A poetry generator
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
-#ifndef POEMY_ISLEDICT_H
-#define POEMY_ISLEDICT_H
+#ifndef POEMY_ISLEDICT_H_
+#define POEMY_ISLEDICT_H_
+
+#include <string>
+#include <vector>
 
 struct Syllable {
   vector<string> phonemes;
@@ -24,7 +27,7 @@ class Isledict {
   DISALLOW_COPY_AND_ASSIGN(Isledict);
 };
 
-#endif // POEMY_ISLEDICT_H
+#endif  // POEMY_ISLEDICT_H_
 
 // For Emacs:
 // Local Variables:

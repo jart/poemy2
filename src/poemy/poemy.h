@@ -1,30 +1,36 @@
 // poemy - A poetry generator
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
-#ifndef POEMY_H
-#define POEMY_H
+#ifndef POEMY_H_
+#define POEMY_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
-#include <algorithm>
-#include <chrono>
 #include <cassert>
 #include <cstdint>
 #include <cstring>
+
+#include <algorithm>
+#include <chrono>
 #include <functional>
 #include <fstream>
 #include <iostream>
 #include <iterator>
+#include <memory>
 #include <random>
-#include <sparsehash/dense_hash_map>
-#include <sparsehash/dense_hash_set>
-#include <sparsehash/sparse_hash_map>
 #include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
+
+#include <gflags/gflags.h>
+#include <glog/logging.h>
+#include <gperftools/profiler.h>
+#include <sparsehash/dense_hash_map>
+#include <sparsehash/dense_hash_set>
+#include <sparsehash/sparse_hash_map>
 
 using google::dense_hash_map;
 using google::sparse_hash_map;
@@ -41,7 +47,7 @@ using std::vector;
   TypeName(const TypeName&);               \
   void operator=(const TypeName&)
 
-#endif // POEMY_H
+#endif  // POEMY_H_
 
 // For Emacs:
 // Local Variables:
