@@ -6,14 +6,17 @@
 
 #include <string>
 
+// I'm responsible for turning raw corpus text into sentences and words.
 class Corpus {
  public:
-  explicit Corpus(std::istream* input) : input_(input) {}
-  bool good() { return input_->good(); }
-  void operator>>(string& out);
+  // I take ownership of 'input'.
+  explicit Corpus(std::istream* input);
+  bool good() const { return input_->good(); }
+  string get();
 
  private:
-  std::istream* input_;
+  unique_ptr<std::istream> input_;
+  bool last_empty_;
 
   DISALLOW_COPY_AND_ASSIGN(Corpus);
 };

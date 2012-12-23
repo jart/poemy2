@@ -7,11 +7,11 @@
 #include <string>
 #include <vector>
 
-void remove_duplicates_from_stringlist(char delim, string* o_text);
-vector<string> list_dir(const string& vector);
-vector<string> split(const string& text, char delim);
-void cpu_profiler_start();
-void cpu_profiler_stop();
+void RemoveDuplicatesFromStringlist(string* text, char delim);
+vector<string> ListDir(const string& vector);
+vector<string> Split(const string& text, char delim);
+void CpuProfilerStart();
+void CpuProfilerStop();
 
 #endif  // POEMY_UTIL_H_
 

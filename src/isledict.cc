@@ -4,7 +4,7 @@
 #include "poemy/poemy.h"
 #include "poemy/isledict.h"
 
-static Syllable parse_syllable(const string& prons, size_t& pos) {
+static Syllable ParseSyllable(const string& prons, size_t& pos) {
   Syllable res;
   size_t begin = pos;
   while (pos < prons.length()) {
@@ -38,10 +38,10 @@ static Syllable parse_syllable(const string& prons, size_t& pos) {
   assert(false);
 }
 
-static vector<Syllable> parse_pronounce(const string& prons, size_t& pos) {
+static vector<Syllable> ParsePronounce(const string& prons, size_t& pos) {
   vector<Syllable> res;
   while (pos < prons.length()) {
-    res.push_back(parse_syllable(prons, pos));
+    res.push_back(ParseSyllable(prons, pos));
     if (prons[pos - 1] == '|') {
       return res;
     }
@@ -61,7 +61,7 @@ Isledict::operator[](const string& word) {
     const string& prons = pronounce_[word];
     size_t pos = 0;
     while (pos < prons.length()) {
-      res.push_back(parse_pronounce(prons, pos));
+      res.push_back(ParsePronounce(prons, pos));
     }
   }
   return res;
@@ -102,10 +102,11 @@ static bool extract_word(const string& line, string& word) {
   return true;
 }
 
-void Isledict::Load(const string& path) {
-  std::ifstream isledict(path);
+void Isledict::Load(std::istream* input) {
+  PCHECK(input->good());
+  unique_ptr<std::istream> free_input(input);
   string line, word;
-  while (std::getline(isledict, line).good()) {
+  while (std::getline(*input, line).good()) {
     if (line.substr(0, 2) == "##") {
       continue;
     }

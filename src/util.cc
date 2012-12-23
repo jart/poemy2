@@ -7,49 +7,50 @@
 #include "poemy/poemy.h"
 #include "poemy/util.h"
 
-vector<string> split(const string& text, char delim) {
+DEFINE_string(viewer, "xdg-open", "Command for viewing media content.");
+
+vector<string> Split(const string& text, char delim) {
   vector<string> res;
   std::stringstream ss(text);
   string item;
   while (std::getline(ss, item, delim)) {
-    res.push_back(item);
+    res.push_back(std::move(item));
   }
   return res;
 }
 
-void remove_duplicates_from_stringlist(char delim, string* o_text) {
+void RemoveDuplicatesFromStringlist(string* text, char delim) {
   // Split the string, remove empty values, and store it in a set.
   dense_hash_set<string> set;
   set.set_empty_key("");
-  std::stringstream ss(*o_text);
+  std::stringstream ss(*text);
   string item;
   while (std::getline(ss, item, delim)) {
-    if (item != "") {
-      set.insert(item);
+    if (!item.empty()) {
+      set.insert(std::move(item));
     }
   }
-
   // Reassemble string from the set.
-  *o_text = "";
+  *text = "";
   bool first = true;
-  for (auto item : set) {
+  for (const auto& item : set) {
     if (first) {
       first = false;
     } else {
-      *o_text += delim;
+      *text += delim;
     }
-    *o_text += item;
+    *text += item;
   }
-  o_text->shrink_to_fit();
+  text->shrink_to_fit();
 }
 
-vector<string> list_dir(const string& path) {
+vector<string> ListDir(const string& path) {
   vector<string> res;
   DIR* dir = opendir(path.c_str());
   if (dir) {
     for (;;) {
       dirent* entry = readdir(dir);
-      if (entry == NULL) {
+      if (entry == nullptr) {
         break;
       }
       string fname(entry->d_name);
@@ -67,29 +68,34 @@ vector<string> list_dir(const string& path) {
 
 #ifdef HAVE_PROFILER
 
-void cpu_profiler_start() {
+void CpuProfilerStart() {
   ProfilerStart("/tmp/cpu");
 }
 
-void cpu_profiler_stop() {
+void CpuProfilerStop() {
   ProfilerStop();
   if (!fork()) {
     setsid();
     close(0);
     close(1);
     close(2);
-    int rc = !(system("pprof --gif poemy /tmp/cpu >/tmp/cpu.gif") != 0 ||
-               system("eog /tmp/cpu.gif") != 0);
+    if (system("pprof --gif poemy /tmp/cpu >/tmp/cpu.gif") != 0) {
+      LOG(ERROR) << "Failed to run pprof.";
+    } else {
+      string cmd(FLAGS_viewer + " /tmp/cpu.gif");
+      if (system(cmd.c_str()) != 0) {
+        LOG(ERROR) << "I failed to show you the cpu profiler image :(";
+      }
+    }
     unlink("/tmp/cpu");
-    unlink("/tmp/cpu.gif");
-    exit(rc);
+    exit(0);
   }
 }
 
 #else
 
-void cpu_profiler_start() {}
-void cpu_profiler_stop() {}
+void CpuProfilerStart() {}
+void CpuProfilerStop() {}
 
 #endif  // HAVE_PROFILER
 

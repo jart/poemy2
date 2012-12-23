@@ -15,7 +15,8 @@ struct Syllable {
 class Isledict {
  public:
   Isledict();
-  void Load(const string& path);
+  // I take ownership of 'input'.
+  void Load(std::istream* input);
   const vector<vector<Syllable> >& operator[](const string& word);
   static void Print(const vector<Syllable>& pron);
   static void Print(const vector<vector<Syllable> >& prons);

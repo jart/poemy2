@@ -6,9 +6,12 @@
 #include "poemy/markov.h"
 #include "poemy/util.h"
 
-DEFINE_int32(lines, 50, "How many lines of poetry to generate.");
+DEFINE_int32(lines, 10, "How many lines of poetry to generate.");
 DEFINE_int32(tries, 100000, "How many times to crawl node before quitting.");
 DEFINE_string(corpora, "goth", "Comma-separated list of corpora to load.");
+DEFINE_string(corpora_path, "./corpora", "Path of corpus folders.");
+DEFINE_string(isledict_path, "./data/isledict/isledict0.2.txt",
+              "Path of isledict database file.");
 
 Markov g_chain;
 Isledict g_dict;
@@ -143,10 +146,19 @@ int main(int argc, char** argv) {
   google::InitGoogleLogging(argv[0]);
   google::InstallFailureSignalHandler();
 
-  g_chain.Load(FLAGS_corpora);
-  g_chain.Init();
-  g_dict.Load("data/isledict/isledict0.2.txt");
+  g_dict.Load(new std::ifstream(FLAGS_isledict_path));
 
+  for (const auto& corpus : Split(FLAGS_corpora, ',')) {
+    string corpus_path(FLAGS_corpora_path + "/" + corpus);
+    for (const auto& entry : ListDir(corpus_path)) {
+      string path(FLAGS_corpora_path + "/" + corpus + "/" + entry);
+      LOG(INFO) << "loading: " << path;
+      g_chain.Load(new Corpus(new std::ifstream(path)));
+    }
+  }
+  g_chain.LoadDone();
+
+  CpuProfilerStart();
   const vector<int> meter = {0, 1, 0, 1, 0, 1, 0, 1, 0, 1};
   for (int n = 0; n < FLAGS_lines; ++n) {
     vector<vector<Syllable> > rhyme;
@@ -156,6 +168,7 @@ int main(int argc, char** argv) {
     line = mkline(meter, rhyme);
     for (const auto& str : line) cout << str << " "; cout << endl;
   }
+  CpuProfilerStop();
 
   // line = mkline(meter, rhyme);
   // for (const auto& str : line) {

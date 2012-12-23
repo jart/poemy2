@@ -4,10 +4,17 @@
 #include "poemy/poemy.h"
 #include "poemy/corpus.h"
 
-// Emits one word from the corpus or empty string if at the end of sentence or
-// file. This routine trims out weird characters and lower-cases everything.
-void Corpus::operator>>(string& out) {
-  out = "";
+Corpus::Corpus(std::istream* input) : input_(input), last_empty_(true) {
+  CHECK(input_->good());
+}
+
+inline bool IsEndOfSentenceChar(char ch) {
+  return (ch == '.' || ch == '\n' || ch == '?' || ch == '!' || ch == '"' ||
+          ch == '(' || ch == ')');
+}
+
+string Corpus::get() {
+  string res;
   bool begin = true;
   char ch;
   while (input_->get(ch).good()) {
@@ -17,22 +24,32 @@ void Corpus::operator>>(string& out) {
     if (begin) {
       if ((ch >= 'a' && ch <= 'z') || ch == '\'') {
         begin = false;
-        out += ch;
-      } else if (ch == '.' || ch == '\n') {
-        return;
+        res += ch;
+      } else if (IsEndOfSentenceChar(ch)) {
+        if (!last_empty_) {
+          break;
+        }
       }
     } else {
-      if ((ch >= 'a' && ch <= 'z') || ch == '\'' || ch == '-') {
-        out += ch;
+      if ((ch >= 'a' && ch <= 'z') || ch == '\'') {
+        res += ch;
+      } else if (ch == '-') {
+        char ch2 = input_->peek();
+        if (ch2 >= 'a' && ch2 <= 'z') {
+          res += ch;
+        } else {
+          break;
+        }
       } else {
-        if (ch == '.' || ch == '\n') {
+        if (IsEndOfSentenceChar(ch)) {
           input_->unget();
         }
-        return;
+        break;
       }
     }
   }
-  out = "";
+  last_empty_ = res.empty();
+  return res;
 }
 
 // For Emacs:

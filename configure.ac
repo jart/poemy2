@@ -30,11 +30,5 @@ PKG_CHECK_MODULES(LIBTCMALLOC, libtcmalloc,
     [AC_DEFINE([HAVE_TCMALLOC], [true], [Is gperftools tcmalloc enabled?])],
     [AC_DEFINE([HAVE_TCMALLOC], [false], [Is gperftools tcmalloc enabled?])])
 
-AC_ARG_VAR([GTEST_DIR], [Path to google-test library sources])
-if test x$GTEST_DIR = x; then
-   GTEST_DIR="gtest-1.6.0"
-fi
-AC_SUBST(GTEST_DIR)
-
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

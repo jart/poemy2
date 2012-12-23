@@ -3,7 +3,7 @@
 /libgtest.a
 /libpoemy.a
 /poemy
-/test_*
+/test
 
 /.deps
 /Makefile

@@ -43,17 +43,12 @@ libpoemy_a_CPPFLAGS = $(poemy_CPPFLAGS)
 ######################################################################
 ## testing
 
-check_PROGRAMS = test_corpus
-check_LIBRARIES = libgtest.a
+check_PROGRAMS = test
 TESTS = $(check_PROGRAMS)
-GTEST_CPPFLAGS = -I$(GTEST_DIR)/include -pthread
-GTEST_LIBS = libgtest.a -lpthread
 
-libgtest_a_SOURCES = \
-	$(GTEST_DIR)/include/gtest/gtest.h \
-	$(GTEST_DIR)/src/gtest-all.cc
-libgtest_a_CPPFLAGS = -I$(GTEST_DIR) $(GTEST_CPPFLAGS)
-
-test_corpus_SOURCES = src/test_corpus.cc
-test_corpus_CPPFLAGS = $(poemy_CPPFLAGS) $(GTEST_CPPFLAGS)
-test_corpus_LDADD = $(poemy_LDADD) $(GTEST_LIBS)
+test_SOURCES = \
+	src/test_corpus.cc \
+	src/test_main.cc \
+	gtest-1.6.0/src/gtest-all.cc
+test_CPPFLAGS = $(poemy_CPPFLAGS) -Igtest-1.6.0 -Igtest-1.6.0/include -pthread
+test_LDADD = $(poemy_LDADD) -lpthread

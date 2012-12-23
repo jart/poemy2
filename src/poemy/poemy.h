@@ -13,7 +13,6 @@
 #include <cstring>
 
 #include <algorithm>
-#include <chrono>
 #include <functional>
 #include <fstream>
 #include <iostream>
@@ -40,6 +39,7 @@ using std::cerr;
 using std::endl;
 using std::string;
 using std::vector;
+using std::unique_ptr;
 
 // A macro to disallow the copy constructor and operator= functions
 // This should be used in the private: declarations for a class

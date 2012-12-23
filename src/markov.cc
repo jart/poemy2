@@ -2,53 +2,28 @@
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
 #include "poemy/poemy.h"
-#include "poemy/util.h"
 #include "poemy/corpus.h"
 #include "poemy/markov.h"
 
-static const char kDelimiter = ',';
+Markov::Markov()
+  : rand_(std::chrono::system_clock::now().time_since_epoch().count()) {}
 
-Markov::Markov(const string& corpora_path)
-    : corpora_path_(corpora_path),
-      rand_(std::chrono::system_clock::now().time_since_epoch().count()) {
-}
-
-void Markov::Load(const string& corpus) {
-  string corpus_path(corpora_path_ + "/" + corpus);
-  for (const auto& entry : list_dir(corpus_path)) {
-    LoadCorpus(corpus_path + "/" + entry);
-  }
-}
-
-void Markov::Init() {
-  keys_.clear();
-  keys_.reserve(chain_.size());
-  for (auto& pair : chain_) {
-    // remove_duplicates_from_stringlist(kDelimiter, &pair.second);
-    std::unique(std::begin(pair.second), std::end(pair.second));
-    keys_.push_back(pair.first);
-  }
-}
-
-void Markov::LoadCorpus(const string& path) {
-  std::ifstream fs(path);
-  Corpus corp(&fs);
-  string w1, w2;
-  while (corp.good()) {
-    corp >> w1;
+void Markov::Load(Corpus* corp) {
+  unique_ptr<Corpus> free_corp(corp);
+  while (corp->good()) {
+    string w1 = corp->get();
     if (w1.empty()) {
       continue;
     }
-    if (!corp.good()) {
+    if (!corp->good()) {
       break;
     }
-    corp >> w2;
+    string w2 = corp->get();
     if (w2.empty()) {
       continue;
     }
-    while (corp.good()) {
-      string w3;
-      corp >> w3;
+    while (corp->good()) {
+      string w3 = corp->get();
       if (w3.empty()) {
         break;
       }
@@ -56,6 +31,16 @@ void Markov::LoadCorpus(const string& path) {
       std::swap(w1, w2);
       std::swap(w2, w3);
     }
+  }
+}
+
+void Markov::LoadDone() {
+  CHECK(chain_.size() > 0) << "You need to actually load some data.";
+  keys_.clear();
+  keys_.reserve(chain_.size());
+  for (auto& pair : chain_) {
+    std::unique(std::begin(pair.second), std::end(pair.second));
+    keys_.push_back(pair.first);
   }
 }
 
