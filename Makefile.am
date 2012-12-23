@@ -39,7 +39,9 @@ libpoemy_a_SOURCES = \
 	src/poemy/error.h \
 	src/poemy/isledict.h \
 	src/poemy/markov.h \
+	src/poemy/pronounce.h \
 	src/poemy/util.h \
+	src/pronounce.cc \
 	src/util.cc
 libpoemy_a_CPPFLAGS = $(poemy_CPPFLAGS)
 
@@ -52,6 +54,7 @@ TESTS = $(check_PROGRAMS)
 test_SOURCES = \
 	src/corpus_test.cc \
 	src/error_test.cc \
+	src/pronounce_test.cc \
 	src/test.cc \
 	gtest-1.6.0/src/gtest-all.cc
 test_CPPFLAGS = $(poemy_CPPFLAGS) -Igtest-1.6.0 -Igtest-1.6.0/include -pthread

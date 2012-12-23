@@ -39,9 +39,13 @@ Then create a developers build:
     ./configure CPPFLAGS="-O0 -g3 -fno-inline -Wall -pipe -march=native"
     make check -j4
 
+Here's how to check for leaks:
+
+    HEAPCHECK=normal ./poemy
+
 Here's how to do a heap profile:
 
     HEAPPROFILE=/tmp/heap ./poemy
     pprof --gif poemy /tmp/heap.* >/tmp/heap.gif
-    eog /tmp/heap.gif
+    chrome /tmp/heap.gif
     rm /tmp/heap.*

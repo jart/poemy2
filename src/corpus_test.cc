@@ -1,10 +1,9 @@
 // poemy - A poetry generator
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
-#include <sstream>
-
-#include <gtest/gtest.h>
 #include "poemy/corpus.h"
+#include <sstream>
+#include <gtest/gtest.h>
 
 using poemy::Corpus;
 

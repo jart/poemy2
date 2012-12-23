@@ -10,28 +10,25 @@
 
 #include <sparsehash/dense_hash_map>
 #include <poemy/defines.h>
+#include <poemy/pronounce.h>
 
 namespace poemy {
-
-struct Syllable {
-  std::vector<std::string> phonemes;
-  int stress;
-};
 
 class Isledict {
  public:
   Isledict();
   // I take ownership of 'input'.
   void Load(std::istream* input);
-  const std::vector<std::vector<Syllable> >& operator[](
-    const std::string& word);
-  // static void Print(const std::vector<Syllable>& pron);
-  // static void Print(const std::vector<std::vector<Syllable> >& prons);
+  const Pronounces& operator[](const std::string& word);
+  // static void Print(const Pronounce& pron);
+  // static void Print(const Pronounces& prons);
 
  private:
+  static bool ExtractWord(const std::string& line, std::string* word);
+  static Syllable ParseSyllable(const std::string& prons, size_t& pos);
+  static Pronounce ParsePronounce(const std::string& prons, size_t& pos);
   google::dense_hash_map<std::string, std::string> pronounce_;
-  google::dense_hash_map<std::string,
-                         std::vector<std::vector<Syllable> > > pronounce_full_;
+  google::dense_hash_map<std::string, Pronounces> pronounce_full_;
 
   POEMY_DISALLOW_COPY_AND_ASSIGN(Isledict);
 };

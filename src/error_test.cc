@@ -1,8 +1,8 @@
 // poemy - A poetry generator
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
-#include <gtest/gtest.h>
 #include "poemy/error.h"
+#include <gtest/gtest.h>
 
 using poemy::Error;
 
