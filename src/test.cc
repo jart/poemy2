@@ -1,7 +1,7 @@
 // poemy - A poetry generator
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 int main(int argc, char** argv) {
   testing::InitGoogleTest(&argc, argv);

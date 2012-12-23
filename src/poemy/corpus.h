@@ -25,7 +25,7 @@ class Corpus {
   std::unique_ptr<std::istream> input_;
   bool last_empty_;
 
-  DISALLOW_COPY_AND_ASSIGN(Corpus);
+  POEMY_DISALLOW_COPY_AND_ASSIGN(Corpus);
 };
 
 }  // namespace poemy

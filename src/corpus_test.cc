@@ -3,7 +3,7 @@
 
 #include <sstream>
 
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include "poemy/corpus.h"
 
 using poemy::Corpus;

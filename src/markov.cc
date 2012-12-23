@@ -9,13 +9,13 @@
 #include <glog/logging.h>
 #include "poemy/corpus.h"
 
+using std::chrono::system_clock;
 using std::string;
 using std::vector;
 
 namespace poemy {
 
-Markov::Markov()
-  : rand_(std::chrono::system_clock::now().time_since_epoch().count()) {}
+Markov::Markov() : rand_(system_clock::now().time_since_epoch().count()) {}
 
 void Markov::Load(Corpus* corp) {
   std::unique_ptr<Corpus> free_corp(corp);

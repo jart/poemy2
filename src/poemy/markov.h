@@ -31,7 +31,7 @@ class Markov {
   std::mt19937 rand_;
   static const char kDelimiter = ',';
 
-  DISALLOW_COPY_AND_ASSIGN(Markov);
+  POEMY_DISALLOW_COPY_AND_ASSIGN(Markov);
 };
 
 }  // namespace poemy

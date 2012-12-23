@@ -33,7 +33,7 @@ class Isledict {
   google::dense_hash_map<std::string,
                          std::vector<std::vector<Syllable> > > pronounce_full_;
 
-  DISALLOW_COPY_AND_ASSIGN(Isledict);
+  POEMY_DISALLOW_COPY_AND_ASSIGN(Isledict);
 };
 
 }  // namespace poemy

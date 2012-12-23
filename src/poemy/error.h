@@ -33,7 +33,7 @@ class Error {
     return os << err.message();
   }
 
-  DISALLOW_COPY_AND_ASSIGN(Error);
+  POEMY_DISALLOW_COPY_AND_ASSIGN(Error);
 };
 
 }  // namespace poemy
