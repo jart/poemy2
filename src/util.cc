@@ -7,7 +7,9 @@
 #include "poemy/poemy.h"
 #include "poemy/util.h"
 
+#ifdef HAVE_PROFILER
 DEFINE_string(viewer, "xdg-open", "Command for viewing media content.");
+#endif
 
 vector<string> Split(const string& text, char delim) {
   vector<string> res;

@@ -30,14 +30,16 @@ poemy_LDADD = \
 
 libpoemy_a_SOURCES = \
 	src/corpus.cc \
-	src/corpus.h \
+	src/error.cc \
 	src/isledict.cc \
-	src/isledict.h \
 	src/markov.cc \
-	src/markov.h \
-	src/poemy.h \
-	src/util.cc \
-	src/util.h
+	src/poemy/corpus.h \
+	src/poemy/error.h \
+	src/poemy/isledict.h \
+	src/poemy/markov.h \
+	src/poemy/poemy.h \
+	src/poemy/util.h \
+	src/util.cc
 libpoemy_a_CPPFLAGS = $(poemy_CPPFLAGS)
 
 ######################################################################
@@ -47,8 +49,9 @@ check_PROGRAMS = test
 TESTS = $(check_PROGRAMS)
 
 test_SOURCES = \
-	src/test_corpus.cc \
-	src/test_main.cc \
+	src/corpus_test.cc \
+	src/error_test.cc \
+	src/test.cc \
 	gtest-1.6.0/src/gtest-all.cc
 test_CPPFLAGS = $(poemy_CPPFLAGS) -Igtest-1.6.0 -Igtest-1.6.0/include -pthread
 test_LDADD = $(poemy_LDADD) -lpthread

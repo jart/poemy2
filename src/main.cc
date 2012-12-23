@@ -2,6 +2,7 @@
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
 #include "poemy/poemy.h"
+#include "poemy/error.h"
 #include "poemy/isledict.h"
 #include "poemy/markov.h"
 #include "poemy/util.h"
@@ -15,8 +16,6 @@ DEFINE_string(isledict_path, "./data/isledict/isledict0.2.txt",
 
 Markov g_chain;
 Isledict g_dict;
-
-class Exhausted {};
 
 void match_meter(const vector<vector<Syllable> >& prons,
                  const vector<int>& meter, size_t pos,
@@ -65,11 +64,13 @@ void mkword(const string& word1,
             const vector<int>& meter,
             const vector<vector<Syllable> >& rhyme,
             vector<std::pair<string, vector<Syllable> > >& words,
-            dense_hash_set<string>& visited) {
+            dense_hash_set<string>& visited,
+            Error* err) {
   if (pos == meter.size()) {
     if (rhyme.size()) {
       if (!is_rhyme(g_dict[words[words.size() - 1].first], rhyme)) {
-        throw Exhausted();
+        err->set_code(Error::kExhausted);
+        return;
       }
     }
     return;
@@ -93,19 +94,20 @@ void mkword(const string& word1,
     }
     words.push_back(p3);
     pos += p3.second.size();
-    try {
-      mkword(word2, p3.first, pos, meter, rhyme, words, visited);
+    mkword(word2, p3.first, pos, meter, rhyme, words, visited, err);
+    if (err->Ok()) {
       return;
-    } catch (Exhausted exc) {
-      pos -= words[words.size() - 1].second.size();
-      words.pop_back();
     }
+    err->Reset();
+    pos -= words[words.size() - 1].second.size();
+    words.pop_back();
   }
-  throw Exhausted();
+  err->set_code(Error::kExhausted);
 }
 
 vector<string>
-mkline(const vector<int>& meter, const vector<vector<Syllable> >& rhyme) {
+mkline(const vector<int>& meter, const vector<vector<Syllable> >& rhyme,
+       Error* err) {
   for (int tries = 0; tries < FLAGS_tries; ++tries) {
     size_t pos = 0;
     dense_hash_set<string> visited;
@@ -126,17 +128,18 @@ mkline(const vector<int>& meter, const vector<vector<Syllable> >& rhyme) {
     }
     words.push_back(p2);
     pos += p2.second.size();
-    try {
-      mkword(p1.first, p2.first, pos, meter, rhyme, words, visited);
+    mkword(p1.first, p2.first, pos, meter, rhyme, words, visited, err);
+    if (err->Ok()) {
       vector<string> res;
       for (const auto& pair : words) {
         res.push_back(pair.first);
       }
       return res;
-    } catch (Exhausted exc) {
     }
+    err->Reset();
   }
-  throw Exhausted();
+  err->set_code(Error::kExhausted);
+  return {};
 }
 
 int main(int argc, char** argv) {
@@ -161,11 +164,21 @@ int main(int argc, char** argv) {
   CpuProfilerStart();
   const vector<int> meter = {0, 1, 0, 1, 0, 1, 0, 1, 0, 1};
   for (int n = 0; n < FLAGS_lines; ++n) {
+    Error err;
     vector<vector<Syllable> > rhyme;
-    vector<string> line = mkline(meter, rhyme);
+    vector<string> line = mkline(meter, rhyme, &err);
+    if (!err.Ok()) {
+      LOG(WARNING) << "mkline() #1 failed: " << err;
+      continue;
+    }
     for (const auto& str : line) cout << str << " "; cout << endl;
     rhyme = g_dict[line[line.size() - 1]];
-    line = mkline(meter, rhyme);
+    err.Reset();
+    line = mkline(meter, rhyme, &err);
+    if (!err.Ok()) {
+      LOG(WARNING) << "mkline() #2 failed: " << err;
+      continue;
+    }
     for (const auto& str : line) cout << str << " "; cout << endl;
   }
   CpuProfilerStop();

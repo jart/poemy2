@@ -1,25 +1,45 @@
 # poemy - A poetry generator
 
-Poemy is a poetry generator written in C++11 with Googley libraries that uses
-markov chains and speech dictionaries to write poetry in any meter or rhyming
-scheme.
+Poemy is a program that creates computer-generated poetry in any meter or
+rhyming scheme. It was written by Justine Tunney using C++11 and lots of
+Googley libraries. Poemy works by using markov chains and the isledict speech
+pronunciation dictionary.
 
-## Installation
+## Getting Started
 
-1. `sudo apt-get install build-essential pkg-config autoconf automake`
-2. Install Google gflags: <http://code.google.com/p/gflags/>
-3. Install Google glog: <http://code.google.com/p/google-glog/>
-4. Install Google SparseHash: <http://code.google.com/p/sparsehash/>
-5. Optional: Install libunwind: <http://www.nongnu.org/libunwind/>
-6. Optional: Install Google gperftools: <http://code.google.com/p/gperftools/>
-7. `./autogen.sh && ./configure && make check -j4`
-8. `sudo make install`
+First you need to install some dependencies:
 
-## Invocation
+- `sudo apt-get install build-essential`
+- Google gflags: <http://code.google.com/p/gflags/>
+- Google glog: <http://code.google.com/p/google-glog/>
+- Google SparseHash: <http://code.google.com/p/sparsehash/>
+
+Then build / install poemy as follows:
+
+    ./configure
+    make check -j4
+    sudo make install
+
+Here's some example commands for using poemy:
 
     poemy
+    poemy --help
 
-## Heap profiling
+## Developers
+
+Want to hack poemy? First you'll need to install some additional dependencies:
+
+- `sudo apt-get install pkg-config autoconf automake`
+- libunwind: <http://www.nongnu.org/libunwind/>
+- Google gperftools: <http://code.google.com/p/gperftools/>
+
+Then create a developers build:
+
+    ./autogen.sh
+    ./configure CPPFLAGS="-O0 -g3 -fno-inline -Wall -pipe -march=native"
+    make check -j4
+
+Here's how to do a heap profile:
 
     HEAPPROFILE=/tmp/heap ./poemy
     pprof --gif poemy /tmp/heap.* >/tmp/heap.gif
