@@ -7,11 +7,15 @@
 #include <string>
 #include <vector>
 
+namespace poemy {
+
 void RemoveDuplicatesFromStringlist(string* text, char delim);
 vector<string> ListDir(const string& vector);
 vector<string> Split(const string& text, char delim);
 void CpuProfilerStart();
 void CpuProfilerStop();
+
+}  // namespace poemy
 
 #endif  // POEMY_UTIL_H_
 

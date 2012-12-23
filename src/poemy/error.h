@@ -4,6 +4,8 @@
 #ifndef POEMY_ERROR_H_
 #define POEMY_ERROR_H_
 
+namespace poemy {
+
 // I'm an alternative to exceptions.
 class Error {
  public:
@@ -28,6 +30,8 @@ class Error {
 
   DISALLOW_COPY_AND_ASSIGN(Error);
 };
+
+}  // namespace poemy
 
 #endif  // POEMY_ERROR_H_
 

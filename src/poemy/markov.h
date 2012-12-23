@@ -10,6 +10,8 @@
 #include <sparsehash/sparse_hash_map>
 #include "corpus.h"
 
+namespace poemy {
+
 class Markov {
  public:
   Markov();
@@ -27,6 +29,8 @@ class Markov {
 
   DISALLOW_COPY_AND_ASSIGN(Markov);
 };
+
+}  // namespace poemy
 
 #endif  // POEMY_MARKOV_H_
 

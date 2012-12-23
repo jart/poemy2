@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 
+namespace poemy {
+
 struct Syllable {
   vector<string> phonemes;
   int stress;
@@ -27,6 +29,8 @@ class Isledict {
 
   DISALLOW_COPY_AND_ASSIGN(Isledict);
 };
+
+}  // namespace poemy
 
 #endif  // POEMY_ISLEDICT_H_
 

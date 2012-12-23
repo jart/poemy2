@@ -5,6 +5,8 @@
 #include "poemy/corpus.h"
 #include "poemy/markov.h"
 
+namespace poemy {
+
 Markov::Markov()
   : rand_(std::chrono::system_clock::now().time_since_epoch().count()) {}
 
@@ -58,6 +60,8 @@ Markov::Picks(const string& word1, const string& word2) {
   // std::random_shuffle(std::begin(choices), std::end(choices));
   return choices;
 }
+
+}  // namespace poemy
 
 // For Emacs:
 // Local Variables:

@@ -5,6 +5,8 @@
 #include "poemy/error.h"
 #include "gtest/gtest.h"
 
+using poemy::Error;
+
 TEST(ErrorTest, Basic) {
   Error err;
   EXPECT_TRUE(err.Ok());

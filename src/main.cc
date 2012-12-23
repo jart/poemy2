@@ -14,6 +14,8 @@ DEFINE_string(corpora_path, "./corpora", "Path of corpus folders.");
 DEFINE_string(isledict_path, "./data/isledict/isledict0.2.txt",
               "Path of isledict database file.");
 
+using namespace poemy;
+
 Markov g_chain;
 Isledict g_dict;
 

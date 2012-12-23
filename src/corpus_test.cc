@@ -5,6 +5,8 @@
 #include "poemy/corpus.h"
 #include "gtest/gtest.h"
 
+using poemy::Corpus;
+
 TEST(CorpusTest, HelloKitty) {
   Corpus corp(new std::istringstream("hello kitty"));
   EXPECT_TRUE(corp.good());

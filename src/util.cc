@@ -11,6 +11,8 @@
 DEFINE_string(viewer, "xdg-open", "Command for viewing media content.");
 #endif
 
+namespace poemy {
+
 vector<string> Split(const string& text, char delim) {
   vector<string> res;
   std::stringstream ss(text);
@@ -100,6 +102,8 @@ void CpuProfilerStart() {}
 void CpuProfilerStop() {}
 
 #endif  // HAVE_PROFILER
+
+}  // namespace poemy
 
 // For Emacs:
 // Local Variables:

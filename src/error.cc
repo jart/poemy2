@@ -4,6 +4,8 @@
 #include "poemy/poemy.h"
 #include "poemy/error.h"
 
+namespace poemy {
+
 bool Error::Ok() const {
   return code_ == Error::kOK;
 }
@@ -30,6 +32,8 @@ const string Error::message() const {
       CHECK(false) << "Unknown error state: " << code_;
   }
 }
+
+}  // namespace poemy
 
 // For Emacs:
 // Local Variables:

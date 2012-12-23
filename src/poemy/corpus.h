@@ -6,6 +6,8 @@
 
 #include <string>
 
+namespace poemy {
+
 // I'm responsible for turning raw corpus text into sentences and words.
 class Corpus {
  public:
@@ -20,6 +22,8 @@ class Corpus {
 
   DISALLOW_COPY_AND_ASSIGN(Corpus);
 };
+
+}  // namespace poemy
 
 #endif  // POEMY_CORPUS_H_
 

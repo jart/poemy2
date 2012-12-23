@@ -4,6 +4,8 @@
 #include "poemy/poemy.h"
 #include "poemy/corpus.h"
 
+namespace poemy {
+
 Corpus::Corpus(std::istream* input) : input_(input), last_empty_(true) {
   CHECK(input_->good());
 }
@@ -51,6 +53,8 @@ string Corpus::get() {
   last_empty_ = res.empty();
   return res;
 }
+
+}  // namespace poemy
 
 // For Emacs:
 // Local Variables:

@@ -4,7 +4,9 @@
 #include "poemy/poemy.h"
 #include "poemy/isledict.h"
 
-static Syllable ParseSyllable(const string& prons, size_t& pos) {
+namespace poemy {
+
+Syllable ParseSyllable(const string& prons, size_t& pos) {
   Syllable res;
   size_t begin = pos;
   while (pos < prons.length()) {
@@ -137,6 +139,8 @@ void Isledict::Load(std::istream* input) {
     prons.shrink_to_fit();
   }
 }
+
+}  // namespace poemy
 
 // For Emacs:
 // Local Variables:
