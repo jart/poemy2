@@ -1,9 +1,10 @@
 // poemy - A poetry generator
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
-#include "poemy/poemy.h"
-#include "poemy/corpus.h"
+#include <sstream>
+
 #include "gtest/gtest.h"
+#include "poemy/corpus.h"
 
 using poemy::Corpus;
 
@@ -89,9 +90,10 @@ TEST(CorpusTest, NoEndHyphen) {
 }
 
 TEST(CorpusTest, BreakDash) {
-  for (const auto& str : vector<string> {"Thrilled me--filled me",
-                                         "Thrilled me---filled me",
-                                         "Thrilled me----filled me"}) {
+  for (const auto& str : std::vector<std::string>{
+      "Thrilled me--filled me",
+      "Thrilled me---filled me",
+      "Thrilled me----filled me"}) {
     Corpus corp(new std::istringstream(str));
     EXPECT_EQ("thrilled", corp.get()) << "Original: " << str;
     EXPECT_EQ("me", corp.get()) << "Original: " << str;
@@ -102,7 +104,7 @@ TEST(CorpusTest, BreakDash) {
 }
 
 TEST(CorpusTest, DealWithQuotes) {
-  string str = "\"Lenore!\" Merely this, and nothing more.";
+  std::string str = "\"Lenore!\" Merely this, and nothing more.";
   Corpus corp(new std::istringstream(str));
   EXPECT_EQ("lenore", corp.get());
   EXPECT_EQ("", corp.get());
@@ -115,7 +117,7 @@ TEST(CorpusTest, DealWithQuotes) {
 }
 
 TEST(CorpusTest, DealWithQuotes2) {
-  string str = "by a touch, \"you promised me!\" it said.";
+  std::string str = "by a touch, \"you promised me!\" it said.";
   Corpus corp(new std::istringstream(str));
   EXPECT_EQ("by", corp.get());
   EXPECT_EQ("a", corp.get());
