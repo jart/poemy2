@@ -7,6 +7,9 @@
 
 namespace poemy {
 
+Error::~Error() {
+}
+
 bool Error::Ok() const {
   return code_ == Error::kOK;
 }
@@ -20,6 +23,7 @@ Error::Code Error::code() const {
 }
 
 void Error::set_code(Error::Code code) {
+  CHECK(code != Error::kOK) << "Please use Reset() instead of set_code(kOK).";
   code_ = code;
 }
 

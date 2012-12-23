@@ -22,8 +22,8 @@ class Markov {
   void Load(Corpus* corp);
   void LoadDone();
   void PickFirst(std::string* o_word1, std::string* o_word2);
-  const std::vector<std::string>& Picks(const std::string& word1,
-                                        const std::string& word2);
+  std::vector<std::string> Picks(const std::string& word1,
+                                 const std::string& word2);
 
  private:
   google::sparse_hash_map<std::string, std::vector<std::string> > chain_;

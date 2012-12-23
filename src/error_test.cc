@@ -15,8 +15,7 @@ TEST(ErrorTest, Basic) {
   EXPECT_EQ("Exhausted", err.message());
   err.Reset();
   EXPECT_TRUE(err.Ok());
-  err.set_code(Error::kOK);
-  EXPECT_TRUE(err.Ok());
+  ASSERT_DEATH(err.set_code(Error::kOK), "Please use Reset()");
 }
 
 // For Emacs:

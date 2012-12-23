@@ -36,6 +36,7 @@ void Markov::Load(Corpus* corp) {
       if (w3.empty()) {
         break;
       }
+      CHECK(w3[0] != '\0');
       chain_[w1 + kDelimiter + w2].push_back(w3);
       std::swap(w1, w2);
       std::swap(w2, w3);
@@ -60,11 +61,11 @@ void Markov::PickFirst(string* o_word1, string* o_word2) {
   *o_word2 = key.substr(i + 1, key.length() - (i + 1));
 }
 
-const vector<string>&
+vector<string>
 Markov::Picks(const string& word1, const string& word2) {
   const string key = word1 + kDelimiter + word2;
-  vector<string>& choices = chain_[key];
-  // std::random_shuffle(std::begin(choices), std::end(choices));
+  vector<string> choices = chain_[key];
+  std::random_shuffle(std::begin(choices), std::end(choices));
   return choices;
 }
 

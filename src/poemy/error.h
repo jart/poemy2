@@ -20,6 +20,7 @@ class Error {
   };
 
   Error() : code_(kOK) {};
+  ~Error();
   bool Ok() const;
   void Reset();
   Code code() const;

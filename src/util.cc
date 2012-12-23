@@ -22,7 +22,7 @@ vector<string> Split(const string& text, char delim) {
   std::stringstream ss(text);
   string item;
   while (std::getline(ss, item, delim)) {
-    res.push_back(std::move(item));
+    res.push_back(item);
   }
   return res;
 }
@@ -74,7 +74,7 @@ vector<string> ListDir(const string& path) {
 #ifdef HAVE_PROFILER
 #include <gperftools/profiler.h>
 
-DEFINE_string(viewer, "xdg-open", "Command for viewing media content.");
+DEFINE_string(prof_viewer, "chrome", "Command for viewing media content.");
 
 void CpuProfilerStart() {
   ProfilerStart("/tmp/cpu");
@@ -87,10 +87,10 @@ void CpuProfilerStop() {
     close(0);
     close(1);
     close(2);
-    if (system("pprof --gif poemy /tmp/cpu >/tmp/cpu.gif") != 0) {
+    if (system("pprof --gif poemy --ignore=google /tmp/cpu >/tmp/cpu.gif") != 0) {
       LOG(ERROR) << "Failed to run pprof.";
     } else {
-      string cmd(FLAGS_viewer + " /tmp/cpu.gif");
+      string cmd(FLAGS_prof_viewer + " /tmp/cpu.gif");
       if (system(cmd.c_str()) != 0) {
         LOG(ERROR) << "I failed to show you the cpu profiler image :(";
       }
