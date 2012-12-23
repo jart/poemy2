@@ -4,6 +4,11 @@
 #ifndef POEMY_ERROR_H_
 #define POEMY_ERROR_H_
 
+#include <ostream>
+#include <string>
+
+#include <poemy/defines.h>
+
 namespace poemy {
 
 // I'm an alternative to exceptions.
@@ -19,7 +24,7 @@ class Error {
   void Reset();
   Code code() const;
   void set_code(Code code);
-  const string message() const;
+  const std::string message() const;
 
  private:
   Code code_;

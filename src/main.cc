@@ -1,10 +1,18 @@
 // poemy - A poetry generator
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
-#include "poemy/poemy.h"
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <vector>
+
+#include <gflags/gflags.h>
+#include <glog/logging.h>
+#include <sparsehash/dense_hash_set>
 #include "poemy/error.h"
 #include "poemy/isledict.h"
 #include "poemy/markov.h"
+#include "poemy/corpus.h"
 #include "poemy/util.h"
 
 DEFINE_int32(lines, 10, "How many lines of poetry to generate.");
@@ -14,10 +22,15 @@ DEFINE_string(corpora_path, "./corpora", "Path of corpus folders.");
 DEFINE_string(isledict_path, "./data/isledict/isledict0.2.txt",
               "Path of isledict database file.");
 
-using namespace poemy;
+using poemy::Error;
+using poemy::Syllable;
+using std::cout;
+using std::endl;
+using std::string;
+using std::vector;
 
-Markov g_chain;
-Isledict g_dict;
+poemy::Markov g_chain;
+poemy::Isledict g_dict;
 
 void match_meter(const vector<vector<Syllable> >& prons,
                  const vector<int>& meter, size_t pos,
@@ -66,7 +79,7 @@ void mkword(const string& word1,
             const vector<int>& meter,
             const vector<vector<Syllable> >& rhyme,
             vector<std::pair<string, vector<Syllable> > >& words,
-            dense_hash_set<string>& visited,
+            google::dense_hash_set<string>& visited,
             Error* err) {
   if (pos == meter.size()) {
     if (rhyme.size()) {
@@ -112,7 +125,7 @@ mkline(const vector<int>& meter, const vector<vector<Syllable> >& rhyme,
        Error* err) {
   for (int tries = 0; tries < FLAGS_tries; ++tries) {
     size_t pos = 0;
-    dense_hash_set<string> visited;
+    google::dense_hash_set<string> visited;
     visited.set_empty_key("");
     vector<std::pair<string, vector<Syllable> > > words;
     std::pair<string, vector<Syllable> > p1, p2;
@@ -153,17 +166,17 @@ int main(int argc, char** argv) {
 
   g_dict.Load(new std::ifstream(FLAGS_isledict_path));
 
-  for (const auto& corpus : Split(FLAGS_corpora, ',')) {
+  for (const auto& corpus : poemy::util::Split(FLAGS_corpora, ',')) {
     string corpus_path(FLAGS_corpora_path + "/" + corpus);
-    for (const auto& entry : ListDir(corpus_path)) {
+    for (const auto& entry : poemy::util::ListDir(corpus_path)) {
       string path(FLAGS_corpora_path + "/" + corpus + "/" + entry);
       LOG(INFO) << "loading: " << path;
-      g_chain.Load(new Corpus(new std::ifstream(path)));
+      g_chain.Load(new poemy::Corpus(new std::ifstream(path)));
     }
   }
   g_chain.LoadDone();
 
-  CpuProfilerStart();
+  poemy::util::CpuProfilerStart();
   const vector<int> meter = {0, 1, 0, 1, 0, 1, 0, 1, 0, 1};
   for (int n = 0; n < FLAGS_lines; ++n) {
     Error err;
@@ -183,7 +196,7 @@ int main(int argc, char** argv) {
     }
     for (const auto& str : line) cout << str << " "; cout << endl;
   }
-  CpuProfilerStop();
+  poemy::util::CpuProfilerStop();
 
   // line = mkline(meter, rhyme);
   // for (const auto& str : line) {

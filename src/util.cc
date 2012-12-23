@@ -1,17 +1,21 @@
 // poemy - A poetry generator
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
-#include <dirent.h>
-#include <sys/types.h>
-
-#include "poemy/poemy.h"
 #include "poemy/util.h"
 
-#ifdef HAVE_PROFILER
-DEFINE_string(viewer, "xdg-open", "Command for viewing media content.");
-#endif
+#include <dirent.h>
+#include <sys/types.h>
+#include <sstream>
+
+#include <gflags/gflags.h>
+#include <glog/logging.h>
+#include <sparsehash/dense_hash_set>
+
+using std::string;
+using std::vector;
 
 namespace poemy {
+namespace util {
 
 vector<string> Split(const string& text, char delim) {
   vector<string> res;
@@ -25,7 +29,7 @@ vector<string> Split(const string& text, char delim) {
 
 void RemoveDuplicatesFromStringlist(string* text, char delim) {
   // Split the string, remove empty values, and store it in a set.
-  dense_hash_set<string> set;
+  google::dense_hash_set<string> set;
   set.set_empty_key("");
   std::stringstream ss(*text);
   string item;
@@ -51,26 +55,26 @@ void RemoveDuplicatesFromStringlist(string* text, char delim) {
 vector<string> ListDir(const string& path) {
   vector<string> res;
   DIR* dir = opendir(path.c_str());
-  if (dir) {
-    for (;;) {
-      dirent* entry = readdir(dir);
-      if (entry == nullptr) {
-        break;
-      }
-      string fname(entry->d_name);
-      if (fname == "." || fname == "..") {
-        continue;
-      }
-      res.push_back(fname);
+  PCHECK(dir != NULL);
+  for (;;) {
+    dirent* entry = readdir(dir);
+    if (entry == nullptr) {
+      break;
     }
-    closedir(dir);
-  } else {
-    cerr << path << ": " << strerror(errno) << endl;
+    string fname(entry->d_name);
+    if (fname == "." || fname == "..") {
+      continue;
+    }
+    res.push_back(fname);
   }
+  PCHECK(closedir(dir) == 0);
   return res;
 }
 
 #ifdef HAVE_PROFILER
+#include <gperftools/profiler.h>
+
+DEFINE_string(viewer, "xdg-open", "Command for viewing media content.");
 
 void CpuProfilerStart() {
   ProfilerStart("/tmp/cpu");
@@ -97,12 +101,11 @@ void CpuProfilerStop() {
 }
 
 #else
-
 void CpuProfilerStart() {}
 void CpuProfilerStop() {}
-
 #endif  // HAVE_PROFILER
 
+}  // namespace util
 }  // namespace poemy
 
 // For Emacs:

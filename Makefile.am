@@ -15,6 +15,7 @@ noinst_LIBRARIES = libpoemy.a
 
 poemy_SOURCES = src/main.cc
 poemy_CPPFLAGS = \
+	-Isrc \
 	$(LIBGFLAGS_CFLAGS) \
 	$(LIBGLOG_CFLAGS) \
 	$(LIBPROFILER_CFLAGS) \
@@ -34,10 +35,10 @@ libpoemy_a_SOURCES = \
 	src/isledict.cc \
 	src/markov.cc \
 	src/poemy/corpus.h \
+	src/poemy/defines.h \
 	src/poemy/error.h \
 	src/poemy/isledict.h \
 	src/poemy/markov.h \
-	src/poemy/poemy.h \
 	src/poemy/util.h \
 	src/util.cc
 libpoemy_a_CPPFLAGS = $(poemy_CPPFLAGS)

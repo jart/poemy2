@@ -1,9 +1,16 @@
 // poemy - A poetry generator
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
-#include "poemy/poemy.h"
-#include "poemy/corpus.h"
 #include "poemy/markov.h"
+
+#include <chrono>
+#include <memory>
+
+#include <glog/logging.h>
+#include "poemy/corpus.h"
+
+using std::string;
+using std::vector;
 
 namespace poemy {
 
@@ -11,7 +18,7 @@ Markov::Markov()
   : rand_(std::chrono::system_clock::now().time_since_epoch().count()) {}
 
 void Markov::Load(Corpus* corp) {
-  unique_ptr<Corpus> free_corp(corp);
+  std::unique_ptr<Corpus> free_corp(corp);
   while (corp->good()) {
     string w1 = corp->get();
     if (w1.empty()) {

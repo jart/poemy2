@@ -1,8 +1,9 @@
 // poemy - A poetry generator
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
-#include "poemy/poemy.h"
 #include "poemy/corpus.h"
+
+#include <glog/logging.h>
 
 namespace poemy {
 
@@ -10,13 +11,8 @@ Corpus::Corpus(std::istream* input) : input_(input), last_empty_(true) {
   CHECK(input_->good());
 }
 
-inline bool IsEndOfSentenceChar(char ch) {
-  return (ch == '.' || ch == '\n' || ch == '?' || ch == '!' || ch == '"' ||
-          ch == '(' || ch == ')');
-}
-
-string Corpus::get() {
-  string res;
+std::string Corpus::get() {
+  std::string res;
   bool begin = true;
   char ch;
   while (input_->get(ch).good()) {
@@ -52,6 +48,11 @@ string Corpus::get() {
   }
   last_empty_ = res.empty();
   return res;
+}
+
+bool Corpus::IsEndOfSentenceChar(char ch) {
+  return (ch == '.' || ch == '\n' || ch == '?' || ch == '!' || ch == '"' ||
+          ch == '(' || ch == ')');
 }
 
 }  // namespace poemy

@@ -1,8 +1,9 @@
 // poemy - A poetry generator
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
-#include "poemy/poemy.h"
 #include "poemy/error.h"
+
+#include <glog/logging.h>
 
 namespace poemy {
 
@@ -22,7 +23,7 @@ void Error::set_code(Error::Code code) {
   code_ = code;
 }
 
-const string Error::message() const {
+const std::string Error::message() const {
   switch (code_) {
     case Error::kOK:
       return "OK";

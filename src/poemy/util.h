@@ -7,14 +7,18 @@
 #include <string>
 #include <vector>
 
-namespace poemy {
+#include <poemy/defines.h>
 
-void RemoveDuplicatesFromStringlist(string* text, char delim);
-vector<string> ListDir(const string& vector);
-vector<string> Split(const string& text, char delim);
+namespace poemy {
+namespace util {
+
+void RemoveDuplicatesFromStringlist(std::string* text, char delim);
+std::vector<std::string> ListDir(const std::string& vector);
+std::vector<std::string> Split(const std::string& text, char delim);
 void CpuProfilerStart();
 void CpuProfilerStop();
 
+}  // namespace util
 }  // namespace poemy
 
 #endif  // POEMY_UTIL_H_

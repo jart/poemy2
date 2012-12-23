@@ -1,8 +1,14 @@
 // poemy - A poetry generator
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
-#include "poemy/poemy.h"
 #include "poemy/isledict.h"
+
+#include <memory>
+
+#include <glog/logging.h>
+
+using std::string;
+using std::vector;
 
 namespace poemy {
 
@@ -69,28 +75,28 @@ Isledict::operator[](const string& word) {
   return res;
 }
 
-void Isledict::Print(const vector<Syllable>& pron) {
-  for (const auto& syl : pron) {
-    cout << syl.stress << ": ";
-    for (const auto& lol : syl.phonemes) {
-      cout << lol << " ";
-    }
-    cout << endl;
-  }
-}
+// void Isledict::Print(const vector<Syllable>& pron) {
+//   for (const auto& syl : pron) {
+//     cout << syl.stress << ": ";
+//     for (const auto& lol : syl.phonemes) {
+//       cout << lol << " ";
+//     }
+//     cout << endl;
+//   }
+// }
 
-void Isledict::Print(const vector<vector<Syllable> >& prons) {
-  for (const auto& pron : prons) {
-    cout << "----" << endl;
-    for (const auto& syl : pron) {
-      cout << syl.stress << ": ";
-      for (auto lol : syl.phonemes) {
-        cout << lol << " ";
-      }
-      cout << endl;
-    }
-  }
-}
+// void Isledict::Print(const vector<vector<Syllable> >& prons) {
+//   for (const auto& pron : prons) {
+//     cout << "----" << endl;
+//     for (const auto& syl : pron) {
+//       cout << syl.stress << ": ";
+//       for (auto lol : syl.phonemes) {
+//         cout << lol << " ";
+//       }
+//       cout << endl;
+//     }
+//   }
+// }
 
 static bool extract_word(const string& line, string& word) {
   auto pos = line.find("(");
@@ -106,7 +112,7 @@ static bool extract_word(const string& line, string& word) {
 
 void Isledict::Load(std::istream* input) {
   PCHECK(input->good());
-  unique_ptr<std::istream> free_input(input);
+  std::unique_ptr<std::istream> free_input(input);
   string line, word;
   while (std::getline(*input, line).good()) {
     if (line.substr(0, 2) == "##") {

@@ -4,13 +4,16 @@
 #ifndef POEMY_MARKOV_H_
 #define POEMY_MARKOV_H_
 
-#include <chrono>
+#include <random>
 #include <string>
 #include <vector>
+
 #include <sparsehash/sparse_hash_map>
-#include "corpus.h"
+#include <poemy/defines.h>
 
 namespace poemy {
+
+class Corpus;
 
 class Markov {
  public:
@@ -18,12 +21,13 @@ class Markov {
   // I take ownership of 'corp'.
   void Load(Corpus* corp);
   void LoadDone();
-  void PickFirst(string* o_word1, string* o_word2);
-  const vector<string>& Picks(const string& word1, const string& word2);
+  void PickFirst(std::string* o_word1, std::string* o_word2);
+  const std::vector<std::string>& Picks(const std::string& word1,
+                                        const std::string& word2);
 
  private:
-  sparse_hash_map<string, vector<string> > chain_;
-  vector<string> keys_;
+  google::sparse_hash_map<std::string, std::vector<std::string> > chain_;
+  std::vector<std::string> keys_;
   std::mt19937 rand_;
   static const char kDelimiter = ',';
 

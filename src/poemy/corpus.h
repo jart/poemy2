@@ -4,7 +4,11 @@
 #ifndef POEMY_CORPUS_H_
 #define POEMY_CORPUS_H_
 
+#include <istream>
+#include <memory>
 #include <string>
+
+#include <poemy/defines.h>
 
 namespace poemy {
 
@@ -14,10 +18,11 @@ class Corpus {
   // I take ownership of 'input'.
   explicit Corpus(std::istream* input);
   bool good() const { return input_->good(); }
-  string get();
+  std::string get();
 
  private:
-  unique_ptr<std::istream> input_;
+  static bool IsEndOfSentenceChar(char ch);
+  std::unique_ptr<std::istream> input_;
   bool last_empty_;
 
   DISALLOW_COPY_AND_ASSIGN(Corpus);

@@ -4,13 +4,17 @@
 #ifndef POEMY_ISLEDICT_H_
 #define POEMY_ISLEDICT_H_
 
+#include <istream>
 #include <string>
 #include <vector>
+
+#include <sparsehash/dense_hash_map>
+#include <poemy/defines.h>
 
 namespace poemy {
 
 struct Syllable {
-  vector<string> phonemes;
+  std::vector<std::string> phonemes;
   int stress;
 };
 
@@ -19,13 +23,15 @@ class Isledict {
   Isledict();
   // I take ownership of 'input'.
   void Load(std::istream* input);
-  const vector<vector<Syllable> >& operator[](const string& word);
-  static void Print(const vector<Syllable>& pron);
-  static void Print(const vector<vector<Syllable> >& prons);
+  const std::vector<std::vector<Syllable> >& operator[](
+    const std::string& word);
+  // static void Print(const std::vector<Syllable>& pron);
+  // static void Print(const std::vector<std::vector<Syllable> >& prons);
 
  private:
-  dense_hash_map<string, string> pronounce_;
-  dense_hash_map<string, vector<vector<Syllable> > > pronounce_full_;
+  google::dense_hash_map<std::string, std::string> pronounce_;
+  google::dense_hash_map<std::string,
+                         std::vector<std::vector<Syllable> > > pronounce_full_;
 
   DISALLOW_COPY_AND_ASSIGN(Isledict);
 };
