@@ -1,6 +1,8 @@
 // poemy - A poetry generator
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
+// This file makes MurmurHash3 behave like std::hash.
+
 #ifndef POEMY_HASH_H_
 #define POEMY_HASH_H_
 
@@ -19,7 +21,7 @@ template<typename Result, typename Type>
 struct MurmurHash3Base {
   typedef Type argument_type;
   typedef Result result_type;
-  static const size_t kSeed = 1;
+  static const size_t kSeed = 666;
 };
 
 template<typename Type>
@@ -27,11 +29,11 @@ struct MurmurHash3 : public MurmurHash3Base<size_t, Type> {
   size_t operator()(Type val) const;
 };
 
-#define _MURMURHASH3_INTEGRAL_IMPL(Type)                            \
-  template<>                                                        \
-  inline size_t MurmurHash3<Type>::operator()(Type val) const {     \
-    return static_cast<size_t>(val);                                \
-  }                                                                 \
+#define _MURMURHASH3_INTEGRAL_IMPL(Type)                         \
+  template<>                                                     \
+  inline size_t MurmurHash3<Type>::operator()(Type val) const {  \
+    return static_cast<size_t>(val);                             \
+  }                                                              \
 
 _MURMURHASH3_INTEGRAL_IMPL(bool);
 _MURMURHASH3_INTEGRAL_IMPL(char);

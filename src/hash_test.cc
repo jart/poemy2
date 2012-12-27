@@ -2,7 +2,6 @@
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
 #include "poemy/hash.h"
-#include <string>
 #include <vector>
 #include <gtest/gtest.h>
 

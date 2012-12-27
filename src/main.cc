@@ -8,7 +8,7 @@
 
 #include <gflags/gflags.h>
 #include <glog/logging.h>
-#include <sparsehash/dense_hash_set>
+#include <sparsehash/sparse_hash_set>
 
 #include "poemy/corpus.h"
 #include "poemy/error.h"
@@ -39,7 +39,7 @@ using std::string;
 using std::vector;
 
 typedef vector<int> Meter;
-typedef google::dense_hash_set<string, poemy::MurmurHash3<string> > Set;
+typedef google::sparse_hash_set<string, poemy::MurmurHash3<string> > Set;
 
 static Set g_bad_end_words;
 static Set g_bad_start_words;
@@ -48,9 +48,8 @@ static poemy::Isledict g_dict;
 static int g_count_MakeWord = 0;
 static int g_count_MakeLine = 0;
 
-const Pronounce*
+Pronounce
 MatchMeter(const Pronounces& prons, const Meter& meter, size_t pos) {
-  CHECK(pos < meter.size()) << pos << ":" << meter.size();
   const size_t remain = meter.size() - pos;
   for (const auto& pron : prons) {
     if (pron.size() > remain) {
@@ -65,11 +64,10 @@ MatchMeter(const Pronounces& prons, const Meter& meter, size_t pos) {
       }
     }
     if (success) {
-      CHECK(pron.size() < 5);
-      return &pron;
+      return pron;
     }
   }
-  return NULL;
+  return {};
 }
 
 bool IsRhyme(const Pronounces& prons1, const Pronounces& prons2) {
@@ -91,8 +89,8 @@ void MakeWord(const string& word1,
               size_t pos,
               const Meter& meter,
               const string& rhyme,
-              vector<std::pair<string, const Pronounce*> >& words,
-              Set& visited,
+              vector<std::pair<string, Pronounce> >& words,
+              Set* visited,
               Error* err) {
   ++g_count_MakeWord;
   if (pos == meter.size()) {
@@ -101,7 +99,7 @@ void MakeWord(const string& word1,
       return;
     }
     if (!rhyme.empty()) {
-      const string& last_word = words[words.size() - 1].first;
+      const string& last_word = words.back().first;
       if (last_word == rhyme) {
         err->set_code(Error::kExhausted);
         return;
@@ -113,31 +111,31 @@ void MakeWord(const string& word1,
     }
     return;
   }
-  for (const auto& w3 : g_chain.Picks(word1, word2)) {
+  vector<string> lol = g_chain.Picks(word1, word2);
+  for (const auto& w3 : lol) {
     string visited_key = word2 + '/' + w3;
-    if (visited.find(visited_key) != visited.end()) {
+    if (visited->find(visited_key) != visited->end()) {
       continue;
     }
-    visited.insert(std::move(visited_key));
+    visited->insert(std::move(visited_key));
     const Pronounces& prons = g_dict[w3];
     if (prons.empty()) {
       continue;
     }
-    std::pair<string, const Pronounce*> p3;
+    std::pair<string, Pronounce> p3;
     p3.first = w3;
     p3.second = MatchMeter(prons, meter, pos);
-    if (!p3.second) {
+    if (p3.second.empty()) {
       continue;
     }
-    CHECK(p3.second->size() < 5);
     words.push_back(p3);
-    pos += p3.second->size();
+    pos += p3.second.size();
     MakeWord(word2, p3.first, pos, meter, rhyme, words, visited, err);
     if (err->Ok()) {
       return;
     }
     err->Reset();
-    pos -= words[words.size() - 1].second->size();
+    pos -= words.back().second.size();
     words.pop_back();
   }
   err->set_code(Error::kExhausted);
@@ -148,30 +146,27 @@ MakeLine(const Meter& meter, const string& rhyme, Error* err) {
   ++g_count_MakeLine;
   for (int tries = 0; tries < FLAGS_tries; ++tries) {
     size_t pos = 0;
-    Set visited;
-    visited.set_empty_key("");
-    vector<std::pair<string, const Pronounce*> > words;
-    std::pair<string, const Pronounce*> p1, p2;
+    Set visited(FLAGS_tries * 10);
+    vector<std::pair<string, Pronounce> > words;
+    std::pair<string, Pronounce> p1, p2;
     g_chain.PickFirst(&p1.first, &p2.first);
     if (g_bad_start_words.find(p1.first) != g_bad_start_words.end()) {
       continue;
     }
     visited.insert(p1.first + "/" + p2.first);
     p1.second = MatchMeter(g_dict[p1.first], meter, pos);
-    if (!p1.second) {
+    if (p1.second.empty()) {
       continue;
     }
-    CHECK(p1.second->size() < 5);
     words.push_back(p1);
-    pos += p1.second->size();
+    pos += p1.second.size();
     p2.second = MatchMeter(g_dict[p2.first], meter, pos);
-    if (!p2.second) {
+    if (p2.second.empty()) {
       continue;
     }
-    CHECK(p2.second->size() < 5);
     words.push_back(p2);
-    pos += p2.second->size();
-    MakeWord(p1.first, p2.first, pos, meter, rhyme, words, visited, err);
+    pos += p2.second.size();
+    MakeWord(p1.first, p2.first, pos, meter, rhyme, words, &visited, err);
     if (err->Ok()) {
       vector<string> res;
       for (const auto& pair : words) {
@@ -188,7 +183,6 @@ MakeLine(const Meter& meter, const string& rhyme, Error* err) {
 void LoadWords(Set* out, const string& path) {
   std::ifstream input(path);
   PCHECK(input.good()) << path;
-  out->set_empty_key("");
   string word;
   while (std::getline(input, word, '\n')) {
     if (!word.empty()) {
@@ -220,7 +214,7 @@ int main(int argc, char** argv) {
   g_chain.LoadDone();
 
   // poemy::util::CpuProfilerStart();
-  const Meter meter = {0, 0, 1, 0, 0, 1, 0, 0, 1};
+  const Meter meter = {0, 1, 0, 1, 0, 1, 0, 1, 0, 1};
   int n = 0;
   while (n < FLAGS_lines) {
     Error err;
