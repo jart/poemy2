@@ -19,7 +19,7 @@
 #include "poemy/pronounce.h"
 
 DEFINE_int32(lines, 30, "How many lines of poetry to generate.");
-DEFINE_int32(tries, 100, "How many times to crawl node before quitting.");
+DEFINE_int32(tries, 5, "How many times to crawl node before quitting.");
 DEFINE_string(corpora, "goth", "Comma-separated list of corpora to load.");
 DEFINE_string(corpora_path, "./corpora", "Path of corpus folders.");
 DEFINE_string(isledict, "./data/isledict/isledict0.2.txt",
@@ -48,8 +48,7 @@ static poemy::Isledict g_dict;
 static int g_count_MakeWord = 0;
 static int g_count_MakeLine = 0;
 
-Pronounce
-MatchMeter(const Pronounces& prons, const Meter& meter, size_t pos) {
+Pronounce MatchMeter(const Pronounces& prons, const Meter& meter, size_t pos) {
   const size_t remain = meter.size() - pos;
   for (const auto& pron : prons) {
     if (pron.size() > remain) {

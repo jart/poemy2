@@ -10,6 +10,7 @@
 
 #include <sparsehash/dense_hash_map>
 #include <poemy/defines.h>
+#include <poemy/hash.h>
 #include <poemy/pronounce.h>
 
 namespace poemy {
@@ -22,12 +23,13 @@ class Isledict {
   const Pronounces& operator[](const std::string& word);
 
  private:
+  typedef MurmurHash3<std::string> Hasher;
   static bool ExtractWord(const std::string& line, std::string* word);
   static Syllable ParseSyllable(const std::string& prons, size_t& pos);
   static Pronounce ParsePronounce(const std::string& prons, size_t& pos);
 
-  google::dense_hash_map<std::string, std::string> pronounce_;
-  google::dense_hash_map<std::string, Pronounces> pronounce_full_;
+  google::dense_hash_map<std::string, std::string, Hasher> pronounce_;
+  google::dense_hash_map<std::string, Pronounces, Hasher> pronounce_full_;
 
   POEMY_DISALLOW_COPY_AND_ASSIGN(Isledict);
 };

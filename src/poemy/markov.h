@@ -9,6 +9,7 @@
 #include <vector>
 
 #include <sparsehash/sparse_hash_map>
+#include <poemy/hash.h>
 #include <poemy/defines.h>
 
 namespace poemy {
@@ -17,7 +18,7 @@ class Corpus;
 
 class Markov {
  public:
-  Markov();
+  Markov() {}
   // I take ownership of 'corp'.
   void Load(Corpus* corp);
   void LoadDone();
@@ -26,9 +27,10 @@ class Markov {
                                  const std::string& word2);
 
  private:
-  google::sparse_hash_map<std::string, std::vector<std::string> > chain_;
+  typedef MurmurHash3<std::string> Hasher;
+  google::sparse_hash_map<std::string, std::vector<std::string>, Hasher> chain_;
   std::vector<std::string> keys_;
-  std::mt19937 rand_;
+  std::random_device dev_random_;
   static const char kDelimiter = ',';
 
   POEMY_DISALLOW_COPY_AND_ASSIGN(Markov);
