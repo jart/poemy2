@@ -60,7 +60,7 @@ typedef std::vector<Syllable> Pronounce;
 typedef std::vector<Pronounce> Pronounces;
 
 std::string PhonemeString(Phoneme phoneme);
-Phoneme ParsePhoneme(const std::string &str);
+Phoneme ParsePhoneme(const std::string& str);
 
 }  // namespace poemy
 

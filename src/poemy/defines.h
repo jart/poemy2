@@ -5,10 +5,19 @@
 #define POEMY_DEFINES_H_
 
 // A macro to disallow the copy constructor and operator= functions
-// This should be used in the private: declarations for a class
+// This should be used in the private: declarations for a class.
 #define POEMY_DISALLOW_COPY_AND_ASSIGN(TypeName) \
   TypeName(const TypeName&);                     \
   void operator=(const TypeName&)
+
+// Manual branch prediction. Use -fprofile-arcs first.
+#ifdef __GNUC__
+#  define POEMY_LIKELY(x) __builtin_expect(!!(x), 1)
+#  define POEMY_UNLIKELY(x) __builtin_expect(!!(x), 0)
+#else
+#  define POEMY_LIKELY(x) x
+#  define POEMY_UNLIKELY(x) x
+#endif
 
 #endif  // POEMY_DEFINES_H_
 

@@ -10,15 +10,16 @@
 #include <glog/logging.h>
 #include <sparsehash/dense_hash_set>
 
+#include "poemy/corpus.h"
 #include "poemy/error.h"
-#include "poemy/pronounce.h"
+#include "poemy/hash.h"
 #include "poemy/isledict.h"
 #include "poemy/markov.h"
-#include "poemy/corpus.h"
 #include "poemy/util.h"
+#include "poemy/pronounce.h"
 
 DEFINE_int32(lines, 30, "How many lines of poetry to generate.");
-DEFINE_int32(tries, 1000, "How many times to crawl node before quitting.");
+DEFINE_int32(tries, 100, "How many times to crawl node before quitting.");
 DEFINE_string(corpora, "goth", "Comma-separated list of corpora to load.");
 DEFINE_string(corpora_path, "./corpora", "Path of corpus folders.");
 DEFINE_string(isledict, "./data/isledict/isledict0.2.txt",
@@ -37,17 +38,19 @@ using std::endl;
 using std::string;
 using std::vector;
 
-static google::dense_hash_set<string> g_bad_end_words;
-static google::dense_hash_set<string> g_bad_start_words;
+typedef vector<int> Meter;
+typedef google::dense_hash_set<string, poemy::MurmurHash3<string> > Set;
+
+static Set g_bad_end_words;
+static Set g_bad_start_words;
 static poemy::Markov g_chain;
 static poemy::Isledict g_dict;
 static int g_count_MakeWord = 0;
 static int g_count_MakeLine = 0;
 
-void MatchMeter(const vector<vector<Syllable> >& prons,
-                const vector<int>& meter, size_t pos,
-                vector<Syllable>& res) {
-  CHECK(pos < meter.size());
+const Pronounce*
+MatchMeter(const Pronounces& prons, const Meter& meter, size_t pos) {
+  CHECK(pos < meter.size()) << pos << ":" << meter.size();
   const size_t remain = meter.size() - pos;
   for (const auto& pron : prons) {
     if (pron.size() > remain) {
@@ -62,12 +65,11 @@ void MatchMeter(const vector<vector<Syllable> >& prons,
       }
     }
     if (success) {
-      res = pron;
-      return;
+      CHECK(pron.size() < 5);
+      return &pron;
     }
   }
-  res.clear();
-  return;
+  return NULL;
 }
 
 bool IsRhyme(const Pronounces& prons1, const Pronounces& prons2) {
@@ -87,10 +89,10 @@ bool IsRhyme(const Pronounces& prons1, const Pronounces& prons2) {
 void MakeWord(const string& word1,
               const string& word2,
               size_t pos,
-              const vector<int>& meter,
+              const Meter& meter,
               const string& rhyme,
-              vector<std::pair<string, Pronounce> >& words,
-              google::dense_hash_set<string>& visited,
+              vector<std::pair<string, const Pronounce*> >& words,
+              Set& visited,
               Error* err) {
   ++g_count_MakeWord;
   if (pos == meter.size()) {
@@ -121,51 +123,54 @@ void MakeWord(const string& word1,
     if (prons.empty()) {
       continue;
     }
-    std::pair<string, Pronounce> p3;
+    std::pair<string, const Pronounce*> p3;
     p3.first = w3;
-    MatchMeter(prons, meter, pos, p3.second);
-    if (p3.second.empty()) {
+    p3.second = MatchMeter(prons, meter, pos);
+    if (!p3.second) {
       continue;
     }
+    CHECK(p3.second->size() < 5);
     words.push_back(p3);
-    pos += p3.second.size();
+    pos += p3.second->size();
     MakeWord(word2, p3.first, pos, meter, rhyme, words, visited, err);
     if (err->Ok()) {
       return;
     }
     err->Reset();
-    pos -= words[words.size() - 1].second.size();
+    pos -= words[words.size() - 1].second->size();
     words.pop_back();
   }
   err->set_code(Error::kExhausted);
 }
 
 vector<string>
-MakeLine(const vector<int>& meter, const string& rhyme, Error* err) {
+MakeLine(const Meter& meter, const string& rhyme, Error* err) {
   ++g_count_MakeLine;
   for (int tries = 0; tries < FLAGS_tries; ++tries) {
     size_t pos = 0;
-    google::dense_hash_set<string> visited;
+    Set visited;
     visited.set_empty_key("");
-    vector<std::pair<string, Pronounce> > words;
-    std::pair<string, Pronounce> p1, p2;
+    vector<std::pair<string, const Pronounce*> > words;
+    std::pair<string, const Pronounce*> p1, p2;
     g_chain.PickFirst(&p1.first, &p2.first);
     if (g_bad_start_words.find(p1.first) != g_bad_start_words.end()) {
       continue;
     }
     visited.insert(p1.first + "/" + p2.first);
-    MatchMeter(g_dict[p1.first], meter, pos, p1.second);
-    if (p1.second.empty()) {
+    p1.second = MatchMeter(g_dict[p1.first], meter, pos);
+    if (!p1.second) {
       continue;
     }
+    CHECK(p1.second->size() < 5);
     words.push_back(p1);
-    pos += p1.second.size();
-    MatchMeter(g_dict[p2.first], meter, pos, p2.second);
-    if (p2.second.empty()) {
+    pos += p1.second->size();
+    p2.second = MatchMeter(g_dict[p2.first], meter, pos);
+    if (!p2.second) {
       continue;
     }
+    CHECK(p2.second->size() < 5);
     words.push_back(p2);
-    pos += p2.second.size();
+    pos += p2.second->size();
     MakeWord(p1.first, p2.first, pos, meter, rhyme, words, visited, err);
     if (err->Ok()) {
       vector<string> res;
@@ -180,7 +185,7 @@ MakeLine(const vector<int>& meter, const string& rhyme, Error* err) {
   return {};
 }
 
-void LoadWords(google::dense_hash_set<string>* out, const string& path) {
+void LoadWords(Set* out, const string& path) {
   std::ifstream input(path);
   PCHECK(input.good()) << path;
   out->set_empty_key("");
@@ -215,7 +220,7 @@ int main(int argc, char** argv) {
   g_chain.LoadDone();
 
   // poemy::util::CpuProfilerStart();
-  const vector<int> meter = {0, 1, 0, 1, 0, 1, 0, 1, 0, 1};
+  const Meter meter = {0, 0, 1, 0, 0, 1, 0, 0, 1};
   int n = 0;
   while (n < FLAGS_lines) {
     Error err;

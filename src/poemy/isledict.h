@@ -20,13 +20,12 @@ class Isledict {
   // I take ownership of 'input'.
   void Load(std::istream* input);
   const Pronounces& operator[](const std::string& word);
-  // static void Print(const Pronounce& pron);
-  // static void Print(const Pronounces& prons);
 
  private:
   static bool ExtractWord(const std::string& line, std::string* word);
   static Syllable ParseSyllable(const std::string& prons, size_t& pos);
   static Pronounce ParsePronounce(const std::string& prons, size_t& pos);
+
   google::dense_hash_map<std::string, std::string> pronounce_;
   google::dense_hash_map<std::string, Pronounces> pronounce_full_;
 

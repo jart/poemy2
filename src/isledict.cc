@@ -124,29 +124,6 @@ Pronounce Isledict::ParsePronounce(const string& prons, size_t& pos) {
   CHECK(false);
 }
 
-// void Isledict::Print(const Pronounce& pron) {
-//   for (const auto& syl : pron) {
-//     cout << syl.stress << ": ";
-//     for (const auto& lol : syl.phonemes) {
-//       cout << lol << " ";
-//     }
-//     cout << endl;
-//   }
-// }
-
-// void Isledict::Print(const Pronounces& prons) {
-//   for (const auto& pron : prons) {
-//     cout << "----" << endl;
-//     for (const auto& syl : pron) {
-//       cout << syl.stress << ": ";
-//       for (auto lol : syl.phonemes) {
-//         cout << lol << " ";
-//       }
-//       cout << endl;
-//     }
-//   }
-// }
-
 }  // namespace poemy
 
 // For Emacs:

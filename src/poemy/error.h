@@ -19,7 +19,7 @@ class Error {
     kExhausted = 1,
   };
 
-  Error() : code_(kOK) {};
+  Error() : code_(kOK) {}
   ~Error();
   bool Ok() const;
   void Reset();

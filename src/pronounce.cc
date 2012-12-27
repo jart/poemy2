@@ -52,8 +52,8 @@ std::string PhonemeString(Phoneme phoneme) {
   }
 }
 
-// Pointlessly optimized (I think?) for fun.
-Phoneme ParsePhoneme(const std::string &str) {
+// Pointlessly "optimized" for fun.
+Phoneme ParsePhoneme(const std::string& str) {
   switch (str.size()) {
     case 1:
       switch (str[0]) {

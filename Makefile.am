@@ -30,6 +30,7 @@ poemy_LDADD = \
 	$(LIBTCMALLOC_LIBS)
 
 libpoemy_a_SOURCES = \
+	src/MurmurHash3.cc \
 	src/corpus.cc \
 	src/error.cc \
 	src/isledict.cc \
@@ -37,6 +38,7 @@ libpoemy_a_SOURCES = \
 	src/poemy/corpus.h \
 	src/poemy/defines.h \
 	src/poemy/error.h \
+	src/poemy/hash.h \
 	src/poemy/isledict.h \
 	src/poemy/markov.h \
 	src/poemy/pronounce.h \
@@ -52,10 +54,11 @@ check_PROGRAMS = test
 TESTS = $(check_PROGRAMS)
 
 test_SOURCES = \
+	gtest-1.6.0/src/gtest-all.cc \
 	src/corpus_test.cc \
 	src/error_test.cc \
+	src/hash_test.cc \
 	src/pronounce_test.cc \
-	src/test.cc \
-	gtest-1.6.0/src/gtest-all.cc
+	src/test.cc
 test_CPPFLAGS = $(poemy_CPPFLAGS) -Igtest-1.6.0 -Igtest-1.6.0/include -pthread
 test_LDADD = $(poemy_LDADD) -lpthread
