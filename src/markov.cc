@@ -3,15 +3,19 @@
 
 #include "poemy/markov.h"
 
+#include <chrono>
 #include <memory>
 
 #include <glog/logging.h>
 #include "poemy/corpus.h"
 
+using std::chrono::system_clock;
 using std::string;
 using std::vector;
 
 namespace poemy {
+
+Markov::Markov() : random_(system_clock::now().time_since_epoch().count()) {}
 
 void Markov::Load(Corpus* corp) {
   std::unique_ptr<Corpus> free_corp(corp);
@@ -52,17 +56,24 @@ void Markov::LoadDone() {
 
 void Markov::PickFirst(string* o_word1, string* o_word2) {
   std::uniform_int_distribution<size_t> distrib(0, keys_.size() - 1);
-  const string& key = keys_[distrib(dev_random_)];
-  const int i = key.find(kDelimiter);
-  *o_word1 = key.substr(0, i);
-  *o_word2 = key.substr(i + 1, key.length() - (i + 1));
+  const string& key = keys_[distrib(random_)];
+  o_word1->reserve(16);
+  o_word2->reserve(16);
+  string* out = o_word1;
+  for (char ch : key) {
+    if (ch == kDelimiter) {
+      out = o_word2;
+      continue;
+    }
+    *out += ch;
+  }
 }
 
-vector<string> Markov::Picks(const string& word1, const string& word2) {
-  const string key = word1 + kDelimiter + word2;
-  vector<string> choices = chain_[key];
+const vector<string>& Markov::Picks(const string& word1, const string& word2) {
+  return chain_[word1 + kDelimiter + word2];
+  // vector<string> choices = chain_[word1 + kDelimiter + word2];
   // std::random_shuffle(std::begin(choices), std::end(choices));
-  return choices;
+  // return choices;
 }
 
 }  // namespace poemy

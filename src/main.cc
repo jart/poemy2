@@ -88,8 +88,8 @@ void MakeWord(const string& word1,
     }
     return;
   }
-  vector<string> lol = g_chain.Picks(word1, word2);
-  for (const auto& word3 : lol) {
+  const vector<string>& picks = g_chain.Picks(word1, word2);
+  for (const auto& word3 : picks) {
     string visited_key = word2 + '/' + word3;
     if (visited->find(visited_key) != visited->end()) {
       continue;
@@ -206,6 +206,7 @@ int main(int argc, char** argv) {
   using std::chrono::high_resolution_clock;
   auto begin = high_resolution_clock::now();
 
+  poemy::util::CpuProfilerStart();
   const Meter meter = {0, 1, 0, 1, 0, 1, 0, 1, 0, 1};
   int n = 0;
   while (n < FLAGS_lines) {
@@ -224,6 +225,7 @@ int main(int argc, char** argv) {
     for (const auto& str : line2) cout << str << " "; cout << endl;
     n += 2;
   }
+  poemy::util::CpuProfilerStop();
 
   auto end = high_resolution_clock::now();
   auto elapsed = duration_cast<std::chrono::milliseconds>(end - begin);

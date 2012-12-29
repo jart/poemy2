@@ -18,19 +18,19 @@ class Corpus;
 
 class Markov {
  public:
-  Markov() {}
+  Markov();
   // I take ownership of 'corp'.
   void Load(Corpus* corp);
   void LoadDone();
   void PickFirst(std::string* o_word1, std::string* o_word2);
-  std::vector<std::string> Picks(const std::string& word1,
-                                 const std::string& word2);
+  const std::vector<std::string>& Picks(const std::string& word1,
+                                        const std::string& word2);
 
  private:
   typedef MurmurHash3<std::string> Hasher;
   google::sparse_hash_map<std::string, std::vector<std::string>, Hasher> chain_;
   std::vector<std::string> keys_;
-  std::random_device dev_random_;
+  std::mt19937 random_;
   static const char kDelimiter = ',';
 
   POEMY_DISALLOW_COPY_AND_ASSIGN(Markov);
