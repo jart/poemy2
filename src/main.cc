@@ -43,7 +43,6 @@ using poemy::Syllable;
 using std::cout;
 using std::endl;
 using std::string;
-using std::unique_ptr;
 using std::vector;
 
 typedef google::dense_hash_set<string, poemy::MurmurHash3<string> > Set;
@@ -67,7 +66,7 @@ void MakeWord(const string& word1,
               size_t pos,
               const Meter& meter,
               const string& rhyme,
-              vector<unique_ptr<Word> >* words,
+              vector<Word>* words,
               Set* visited,
               Error* err) {
   ++g_count_MakeWord;
@@ -77,7 +76,7 @@ void MakeWord(const string& word1,
       return;
     }
     if (!rhyme.empty()) {
-      const string& last_word = words->back()->word;
+      const string& last_word = words->back().word;
       if (last_word == rhyme) {
         err->set_code(Error::kExhausted);
         return;
@@ -104,14 +103,14 @@ void MakeWord(const string& word1,
     if (!pronounce) {
       continue;
     }
-    words->emplace_back(new Word(word3, pronounce));
+    words->emplace_back(word3, pronounce);
     pos += pronounce->size();
     MakeWord(word2, word3, pos, meter, rhyme, words, visited, err);
     if (err->Ok()) {
       return;
     }
     err->Reset();
-    pos -= words->back()->pronounce->size();
+    pos -= words->back().pronounce->size();
     words->pop_back();
   }
   err->set_code(Error::kExhausted);
@@ -122,7 +121,7 @@ MakeLine(const Meter& meter, const string& rhyme, Error* err) {
   ++g_count_MakeLine;
   for (int tries = 0; tries < FLAGS_tries; ++tries) {
     size_t pos = 0;
-    vector<unique_ptr<Word> > words;
+    vector<Word> words;
     string word1;
     string word2;
     const Pronounce* pronounce1;
@@ -144,13 +143,13 @@ MakeLine(const Meter& meter, const string& rhyme, Error* err) {
       continue;
     }
     pos += pronounce2->size();
-    words.emplace_back(new Word(word1, pronounce1));
-    words.emplace_back(new Word(word2, pronounce2));
+    words.emplace_back(word1, pronounce1);
+    words.emplace_back(word2, pronounce2);
     MakeWord(word1, word2, pos, meter, rhyme, &words, &visited, err);
     if (err->Ok()) {
       vector<string> res;
       for (auto& wp : words) {
-        res.push_back(std::move(wp->word));
+        res.push_back(std::move(wp.word));
       }
       return res;
     }
@@ -189,9 +188,9 @@ int main(int argc, char** argv) {
     g_dict = new poemy::Cmudict();
     g_dict->Load(new std::ifstream(FLAGS_cmudict_path));
   } else {
-    LOG(FATAL) << "Invalid dictionary: " << FLAGS_dict;
+    LOG(FATAL) << "Invalid word dict: " << FLAGS_dict;
   }
-  unique_ptr<poemy::Dict> free_dict(g_dict);
+  std::unique_ptr<poemy::Dict> free_dict(g_dict);
 
   for (const auto& corpus : poemy::util::Split(FLAGS_corpora, ',')) {
     string corpus_path(FLAGS_corpora_path + "/" + corpus);
