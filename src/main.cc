@@ -1,6 +1,7 @@
 // poemy - A poetry generator
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
+#include <chrono>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -192,7 +193,10 @@ int main(int argc, char** argv) {
   }
   g_chain.LoadDone();
 
-  // poemy::util::CpuProfilerStart();
+  using std::chrono::duration_cast;
+  using std::chrono::high_resolution_clock;
+  auto begin = high_resolution_clock::now();
+
   const Meter meter = {0, 1, 0, 1, 0, 1, 0, 1, 0, 1};
   int n = 0;
   while (n < FLAGS_lines) {
@@ -211,17 +215,15 @@ int main(int argc, char** argv) {
     for (const auto& str : line2) cout << str << " "; cout << endl;
     n += 2;
   }
-  // poemy::util::CpuProfilerStop();
 
-  // line = MakeLine(meter, rhyme);
-  // for (const auto& str : line) {
-  //   cout << str << " ";
-  // }
-  // cout << endl;
+  auto end = high_resolution_clock::now();
+  auto elapsed = duration_cast<std::chrono::milliseconds>(end - begin);
+  auto lps = FLAGS_lines / (elapsed.count() / 1000.0);
+  LOG(INFO) << "g_count_MakeLine: " << g_count_MakeLine;
+  LOG(INFO) << "g_count_MakeWord: " << g_count_MakeWord;
+  LOG(INFO) << "lines per second " << lps;
 
   CHECK(system("pmap -x $(pidof poemy) | tail -n1 | awk '{print $4}'") == 0);
-  cout << "g_count_MakeLine: " << g_count_MakeLine << endl;
-  cout << "g_count_MakeWord: " << g_count_MakeWord << endl;
 
   return 0;
 }

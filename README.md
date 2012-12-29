@@ -18,15 +18,14 @@ Then build / install poemy as follows:
 
     ./configure
     make check -j4
-    sudo make install
 
 Here's some example commands for using poemy:
 
-    poemy
-    poemy --help
-    poemy --alsologtostderr --minloglevel=0
+    ./poemy
+    ./poemy --help
+    ./poemy --alsologtostderr --minloglevel=0
 
-## Developers
+## Developer Build
 
 Want to hack poemy? First you'll need to install some additional dependencies:
 
