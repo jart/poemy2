@@ -1,5 +1,6 @@
 
 #line 1 "src/cmudict_parse.rl"
+// -*- C++ -*-
 // poemy - A poetry generator
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
@@ -13,7 +14,7 @@ using std::string;
 namespace poemy {
 
 
-#line 17 "src/cmudict_parse.cc"
+#line 18 "src/cmudict_parse.cc"
 static const int cmudict_start = 1;
 static const int cmudict_first_final = 16;
 static const int cmudict_error = 0;
@@ -21,7 +22,7 @@ static const int cmudict_error = 0;
 static const int cmudict_en_main = 1;
 
 
-#line 16 "src/cmudict_parse.rl"
+#line 17 "src/cmudict_parse.rl"
 
 
 bool Cmudict::Parse(const string& line, string* word, Pronounce *res) const {
@@ -43,12 +44,12 @@ bool Cmudict::Parse(const string& line, string* word, Pronounce *res) const {
   syllable = &res->back();
 
   
-#line 47 "src/cmudict_parse.cc"
+#line 48 "src/cmudict_parse.cc"
 	{
 	cs = cmudict_start;
 	}
 
-#line 52 "src/cmudict_parse.cc"
+#line 53 "src/cmudict_parse.cc"
 	{
 	if ( p == pe )
 		goto _test_eof;
@@ -66,13 +67,13 @@ st0:
 cs = 0;
 	goto _out;
 tr0:
-#line 39 "src/cmudict_parse.rl"
+#line 40 "src/cmudict_parse.rl"
 	{
       *word += *p;
     }
 	goto st2;
 tr2:
-#line 42 "src/cmudict_parse.rl"
+#line 43 "src/cmudict_parse.rl"
 	{
       *word += *p + ('a' - 'A');
     }
@@ -81,7 +82,7 @@ st2:
 	if ( ++p == pe )
 		goto _test_eof2;
 case 2:
-#line 85 "src/cmudict_parse.cc"
+#line 86 "src/cmudict_parse.cc"
 	switch( (*p) ) {
 		case 32: goto st3;
 		case 39: goto tr0;
@@ -143,97 +144,97 @@ case 5:
 	}
 	goto st0;
 tr7:
-#line 72 "src/cmudict_parse.rl"
+#line 73 "src/cmudict_parse.rl"
 	{ phoneme = kB;  }
-#line 45 "src/cmudict_parse.rl"
+#line 46 "src/cmudict_parse.rl"
 	{
       syllable->phonemes.push_back(phoneme);
     }
 	goto st16;
 tr11:
-#line 76 "src/cmudict_parse.rl"
+#line 77 "src/cmudict_parse.rl"
 	{ phoneme = kF;  }
-#line 45 "src/cmudict_parse.rl"
+#line 46 "src/cmudict_parse.rl"
 	{
       syllable->phonemes.push_back(phoneme);
     }
 	goto st16;
 tr12:
-#line 77 "src/cmudict_parse.rl"
+#line 78 "src/cmudict_parse.rl"
 	{ phoneme = kG;  }
-#line 45 "src/cmudict_parse.rl"
+#line 46 "src/cmudict_parse.rl"
 	{
       syllable->phonemes.push_back(phoneme);
     }
 	goto st16;
 tr16:
-#line 80 "src/cmudict_parse.rl"
+#line 81 "src/cmudict_parse.rl"
 	{ phoneme = kK;  }
-#line 45 "src/cmudict_parse.rl"
+#line 46 "src/cmudict_parse.rl"
 	{
       syllable->phonemes.push_back(phoneme);
     }
 	goto st16;
 tr17:
-#line 81 "src/cmudict_parse.rl"
+#line 82 "src/cmudict_parse.rl"
 	{ phoneme = kL;  }
-#line 45 "src/cmudict_parse.rl"
+#line 46 "src/cmudict_parse.rl"
 	{
       syllable->phonemes.push_back(phoneme);
     }
 	goto st16;
 tr18:
-#line 82 "src/cmudict_parse.rl"
+#line 83 "src/cmudict_parse.rl"
 	{ phoneme = kM;  }
-#line 45 "src/cmudict_parse.rl"
+#line 46 "src/cmudict_parse.rl"
 	{
       syllable->phonemes.push_back(phoneme);
     }
 	goto st16;
 tr21:
-#line 85 "src/cmudict_parse.rl"
+#line 86 "src/cmudict_parse.rl"
 	{ phoneme = kP;  }
-#line 45 "src/cmudict_parse.rl"
+#line 46 "src/cmudict_parse.rl"
 	{
       syllable->phonemes.push_back(phoneme);
     }
 	goto st16;
 tr22:
-#line 86 "src/cmudict_parse.rl"
+#line 87 "src/cmudict_parse.rl"
 	{ phoneme = kR;  }
-#line 45 "src/cmudict_parse.rl"
+#line 46 "src/cmudict_parse.rl"
 	{
       syllable->phonemes.push_back(phoneme);
     }
 	goto st16;
 tr26:
-#line 91 "src/cmudict_parse.rl"
+#line 92 "src/cmudict_parse.rl"
 	{ phoneme = kV;  }
-#line 45 "src/cmudict_parse.rl"
+#line 46 "src/cmudict_parse.rl"
 	{
       syllable->phonemes.push_back(phoneme);
     }
 	goto st16;
 tr27:
-#line 92 "src/cmudict_parse.rl"
+#line 93 "src/cmudict_parse.rl"
 	{ phoneme = kW;  }
-#line 45 "src/cmudict_parse.rl"
+#line 46 "src/cmudict_parse.rl"
 	{
       syllable->phonemes.push_back(phoneme);
     }
 	goto st16;
 tr28:
-#line 93 "src/cmudict_parse.rl"
+#line 94 "src/cmudict_parse.rl"
 	{ phoneme = kY;  }
-#line 45 "src/cmudict_parse.rl"
+#line 46 "src/cmudict_parse.rl"
 	{
       syllable->phonemes.push_back(phoneme);
     }
 	goto st16;
 tr30:
-#line 57 "src/cmudict_parse.rl"
+#line 58 "src/cmudict_parse.rl"
 	{ phoneme = kAA; }
-#line 48 "src/cmudict_parse.rl"
+#line 49 "src/cmudict_parse.rl"
 	{
       if (found_vowel) {
         res->emplace_back();
@@ -244,9 +245,9 @@ tr30:
     }
 	goto st16;
 tr31:
-#line 58 "src/cmudict_parse.rl"
+#line 59 "src/cmudict_parse.rl"
 	{ phoneme = kAE; }
-#line 48 "src/cmudict_parse.rl"
+#line 49 "src/cmudict_parse.rl"
 	{
       if (found_vowel) {
         res->emplace_back();
@@ -257,9 +258,9 @@ tr31:
     }
 	goto st16;
 tr32:
-#line 59 "src/cmudict_parse.rl"
+#line 60 "src/cmudict_parse.rl"
 	{ phoneme = kAH; }
-#line 48 "src/cmudict_parse.rl"
+#line 49 "src/cmudict_parse.rl"
 	{
       if (found_vowel) {
         res->emplace_back();
@@ -270,9 +271,9 @@ tr32:
     }
 	goto st16;
 tr33:
-#line 60 "src/cmudict_parse.rl"
+#line 61 "src/cmudict_parse.rl"
 	{ phoneme = kAO; }
-#line 48 "src/cmudict_parse.rl"
+#line 49 "src/cmudict_parse.rl"
 	{
       if (found_vowel) {
         res->emplace_back();
@@ -283,9 +284,9 @@ tr33:
     }
 	goto st16;
 tr34:
-#line 61 "src/cmudict_parse.rl"
+#line 62 "src/cmudict_parse.rl"
 	{ phoneme = kAW; }
-#line 48 "src/cmudict_parse.rl"
+#line 49 "src/cmudict_parse.rl"
 	{
       if (found_vowel) {
         res->emplace_back();
@@ -296,9 +297,9 @@ tr34:
     }
 	goto st16;
 tr35:
-#line 62 "src/cmudict_parse.rl"
+#line 63 "src/cmudict_parse.rl"
 	{ phoneme = kAY; }
-#line 48 "src/cmudict_parse.rl"
+#line 49 "src/cmudict_parse.rl"
 	{
       if (found_vowel) {
         res->emplace_back();
@@ -309,17 +310,17 @@ tr35:
     }
 	goto st16;
 tr36:
-#line 73 "src/cmudict_parse.rl"
+#line 74 "src/cmudict_parse.rl"
 	{ phoneme = kCH; }
-#line 45 "src/cmudict_parse.rl"
+#line 46 "src/cmudict_parse.rl"
 	{
       syllable->phonemes.push_back(phoneme);
     }
 	goto st16;
 tr37:
-#line 63 "src/cmudict_parse.rl"
+#line 64 "src/cmudict_parse.rl"
 	{ phoneme = kEH; }
-#line 48 "src/cmudict_parse.rl"
+#line 49 "src/cmudict_parse.rl"
 	{
       if (found_vowel) {
         res->emplace_back();
@@ -330,9 +331,9 @@ tr37:
     }
 	goto st16;
 tr38:
-#line 64 "src/cmudict_parse.rl"
+#line 65 "src/cmudict_parse.rl"
 	{ phoneme = kER; }
-#line 48 "src/cmudict_parse.rl"
+#line 49 "src/cmudict_parse.rl"
 	{
       if (found_vowel) {
         res->emplace_back();
@@ -343,9 +344,9 @@ tr38:
     }
 	goto st16;
 tr39:
-#line 65 "src/cmudict_parse.rl"
+#line 66 "src/cmudict_parse.rl"
 	{ phoneme = kEY; }
-#line 48 "src/cmudict_parse.rl"
+#line 49 "src/cmudict_parse.rl"
 	{
       if (found_vowel) {
         res->emplace_back();
@@ -356,17 +357,17 @@ tr39:
     }
 	goto st16;
 tr40:
-#line 78 "src/cmudict_parse.rl"
+#line 79 "src/cmudict_parse.rl"
 	{ phoneme = kHH; }
-#line 45 "src/cmudict_parse.rl"
+#line 46 "src/cmudict_parse.rl"
 	{
       syllable->phonemes.push_back(phoneme);
     }
 	goto st16;
 tr41:
-#line 66 "src/cmudict_parse.rl"
+#line 67 "src/cmudict_parse.rl"
 	{ phoneme = kIH; }
-#line 48 "src/cmudict_parse.rl"
+#line 49 "src/cmudict_parse.rl"
 	{
       if (found_vowel) {
         res->emplace_back();
@@ -377,9 +378,9 @@ tr41:
     }
 	goto st16;
 tr42:
-#line 67 "src/cmudict_parse.rl"
+#line 68 "src/cmudict_parse.rl"
 	{ phoneme = kIY; }
-#line 48 "src/cmudict_parse.rl"
+#line 49 "src/cmudict_parse.rl"
 	{
       if (found_vowel) {
         res->emplace_back();
@@ -390,17 +391,17 @@ tr42:
     }
 	goto st16;
 tr43:
-#line 79 "src/cmudict_parse.rl"
+#line 80 "src/cmudict_parse.rl"
 	{ phoneme = kJH; }
-#line 45 "src/cmudict_parse.rl"
+#line 46 "src/cmudict_parse.rl"
 	{
       syllable->phonemes.push_back(phoneme);
     }
 	goto st16;
 tr44:
-#line 68 "src/cmudict_parse.rl"
+#line 69 "src/cmudict_parse.rl"
 	{ phoneme = kOW; }
-#line 48 "src/cmudict_parse.rl"
+#line 49 "src/cmudict_parse.rl"
 	{
       if (found_vowel) {
         res->emplace_back();
@@ -411,9 +412,9 @@ tr44:
     }
 	goto st16;
 tr45:
-#line 69 "src/cmudict_parse.rl"
+#line 70 "src/cmudict_parse.rl"
 	{ phoneme = kOY; }
-#line 48 "src/cmudict_parse.rl"
+#line 49 "src/cmudict_parse.rl"
 	{
       if (found_vowel) {
         res->emplace_back();
@@ -424,9 +425,9 @@ tr45:
     }
 	goto st16;
 tr46:
-#line 70 "src/cmudict_parse.rl"
+#line 71 "src/cmudict_parse.rl"
 	{ phoneme = kUH; }
-#line 48 "src/cmudict_parse.rl"
+#line 49 "src/cmudict_parse.rl"
 	{
       if (found_vowel) {
         res->emplace_back();
@@ -437,9 +438,9 @@ tr46:
     }
 	goto st16;
 tr47:
-#line 71 "src/cmudict_parse.rl"
+#line 72 "src/cmudict_parse.rl"
 	{ phoneme = kUW; }
-#line 48 "src/cmudict_parse.rl"
+#line 49 "src/cmudict_parse.rl"
 	{
       if (found_vowel) {
         res->emplace_back();
@@ -450,41 +451,41 @@ tr47:
     }
 	goto st16;
 tr53:
-#line 75 "src/cmudict_parse.rl"
+#line 76 "src/cmudict_parse.rl"
 	{ phoneme = kDH; }
-#line 45 "src/cmudict_parse.rl"
+#line 46 "src/cmudict_parse.rl"
 	{
       syllable->phonemes.push_back(phoneme);
     }
 	goto st16;
 tr54:
-#line 84 "src/cmudict_parse.rl"
+#line 85 "src/cmudict_parse.rl"
 	{ phoneme = kNG; }
-#line 45 "src/cmudict_parse.rl"
+#line 46 "src/cmudict_parse.rl"
 	{
       syllable->phonemes.push_back(phoneme);
     }
 	goto st16;
 tr55:
-#line 88 "src/cmudict_parse.rl"
+#line 89 "src/cmudict_parse.rl"
 	{ phoneme = kSH; }
-#line 45 "src/cmudict_parse.rl"
+#line 46 "src/cmudict_parse.rl"
 	{
       syllable->phonemes.push_back(phoneme);
     }
 	goto st16;
 tr56:
-#line 90 "src/cmudict_parse.rl"
+#line 91 "src/cmudict_parse.rl"
 	{ phoneme = kTH; }
-#line 45 "src/cmudict_parse.rl"
+#line 46 "src/cmudict_parse.rl"
 	{
       syllable->phonemes.push_back(phoneme);
     }
 	goto st16;
 tr57:
-#line 95 "src/cmudict_parse.rl"
+#line 96 "src/cmudict_parse.rl"
 	{ phoneme = kZH; }
-#line 45 "src/cmudict_parse.rl"
+#line 46 "src/cmudict_parse.rl"
 	{
       syllable->phonemes.push_back(phoneme);
     }
@@ -493,7 +494,7 @@ st16:
 	if ( ++p == pe )
 		goto _test_eof16;
 case 16:
-#line 497 "src/cmudict_parse.cc"
+#line 498 "src/cmudict_parse.cc"
 	switch( (*p) ) {
 		case 32: goto st4;
 		case 48: goto tr50;
@@ -502,22 +503,22 @@ case 16:
 	}
 	goto st0;
 tr50:
-#line 97 "src/cmudict_parse.rl"
+#line 98 "src/cmudict_parse.rl"
 	{ syllable->stress = 0; }
 	goto st17;
 tr51:
-#line 98 "src/cmudict_parse.rl"
+#line 99 "src/cmudict_parse.rl"
 	{ syllable->stress = 1; }
 	goto st17;
 tr52:
-#line 99 "src/cmudict_parse.rl"
+#line 100 "src/cmudict_parse.rl"
 	{ syllable->stress = 2; }
 	goto st17;
 st17:
 	if ( ++p == pe )
 		goto _test_eof17;
 case 17:
-#line 521 "src/cmudict_parse.cc"
+#line 522 "src/cmudict_parse.cc"
 	if ( (*p) == 32 )
 		goto st4;
 	goto st0;
@@ -529,9 +530,9 @@ case 6:
 		goto tr36;
 	goto st0;
 tr9:
-#line 74 "src/cmudict_parse.rl"
+#line 75 "src/cmudict_parse.rl"
 	{ phoneme = kD;  }
-#line 45 "src/cmudict_parse.rl"
+#line 46 "src/cmudict_parse.rl"
 	{
       syllable->phonemes.push_back(phoneme);
     }
@@ -540,7 +541,7 @@ st18:
 	if ( ++p == pe )
 		goto _test_eof18;
 case 18:
-#line 544 "src/cmudict_parse.cc"
+#line 545 "src/cmudict_parse.cc"
 	switch( (*p) ) {
 		case 32: goto st4;
 		case 48: goto tr50;
@@ -583,9 +584,9 @@ case 10:
 		goto tr43;
 	goto st0;
 tr19:
-#line 83 "src/cmudict_parse.rl"
+#line 84 "src/cmudict_parse.rl"
 	{ phoneme = kN;  }
-#line 45 "src/cmudict_parse.rl"
+#line 46 "src/cmudict_parse.rl"
 	{
       syllable->phonemes.push_back(phoneme);
     }
@@ -594,7 +595,7 @@ st19:
 	if ( ++p == pe )
 		goto _test_eof19;
 case 19:
-#line 598 "src/cmudict_parse.cc"
+#line 599 "src/cmudict_parse.cc"
 	switch( (*p) ) {
 		case 32: goto st4;
 		case 48: goto tr50;
@@ -613,9 +614,9 @@ case 11:
 	}
 	goto st0;
 tr23:
-#line 87 "src/cmudict_parse.rl"
+#line 88 "src/cmudict_parse.rl"
 	{ phoneme = kS;  }
-#line 45 "src/cmudict_parse.rl"
+#line 46 "src/cmudict_parse.rl"
 	{
       syllable->phonemes.push_back(phoneme);
     }
@@ -624,7 +625,7 @@ st20:
 	if ( ++p == pe )
 		goto _test_eof20;
 case 20:
-#line 628 "src/cmudict_parse.cc"
+#line 629 "src/cmudict_parse.cc"
 	switch( (*p) ) {
 		case 32: goto st4;
 		case 48: goto tr50;
@@ -634,9 +635,9 @@ case 20:
 	}
 	goto st0;
 tr24:
-#line 89 "src/cmudict_parse.rl"
+#line 90 "src/cmudict_parse.rl"
 	{ phoneme = kT;  }
-#line 45 "src/cmudict_parse.rl"
+#line 46 "src/cmudict_parse.rl"
 	{
       syllable->phonemes.push_back(phoneme);
     }
@@ -645,7 +646,7 @@ st21:
 	if ( ++p == pe )
 		goto _test_eof21;
 case 21:
-#line 649 "src/cmudict_parse.cc"
+#line 650 "src/cmudict_parse.cc"
 	switch( (*p) ) {
 		case 32: goto st4;
 		case 48: goto tr50;
@@ -664,9 +665,9 @@ case 12:
 	}
 	goto st0;
 tr29:
-#line 94 "src/cmudict_parse.rl"
+#line 95 "src/cmudict_parse.rl"
 	{ phoneme = kZ;  }
-#line 45 "src/cmudict_parse.rl"
+#line 46 "src/cmudict_parse.rl"
 	{
       syllable->phonemes.push_back(phoneme);
     }
@@ -675,7 +676,7 @@ st22:
 	if ( ++p == pe )
 		goto _test_eof22;
 case 22:
-#line 679 "src/cmudict_parse.cc"
+#line 680 "src/cmudict_parse.cc"
 	switch( (*p) ) {
 		case 32: goto st4;
 		case 48: goto tr50;
@@ -732,7 +733,7 @@ case 15:
 	_out: {}
 	}
 
-#line 109 "src/cmudict_parse.rl"
+#line 110 "src/cmudict_parse.rl"
 
 
   return (cs != cmudict_error);

@@ -1,3 +1,4 @@
+// -*- C++ -*-
 // poemy - A poetry generator
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 

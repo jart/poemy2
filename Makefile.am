@@ -9,8 +9,6 @@ EXTRA_DIST = \
 	config/ax_cxx_compile_stdcxx_11.m4 \
 	config/pkg.m4 \
 	README.md \
-	src/cmudict_parse.rl \
-	src/isledict_parse.rl \
 	$(shell find gtest-1.6.0)
 
 DISTCLEANFILES = \
@@ -40,11 +38,13 @@ libpoemy_a_SOURCES = \
 	src/MurmurHash3.cc \
 	src/cmudict.cc \
 	src/cmudict_parse.cc \
+	src/cmudict_parse.rl \
 	src/corpus.cc \
 	src/dict.cc \
 	src/error.cc \
 	src/isledict.cc \
 	src/isledict_parse.cc \
+	src/isledict_parse.rl \
 	src/markov.cc \
 	src/poemy/cmudict.h \
 	src/poemy/corpus.h \
