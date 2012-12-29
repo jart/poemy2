@@ -8,7 +8,10 @@ EXTRA_DIST = \
 	config/ax_check_compile_flag.m4 \
 	config/ax_cxx_compile_stdcxx_11.m4 \
 	config/pkg.m4 \
-	README.md
+	README.md \
+	src/cmudict_parse.rl \
+	src/isledict_parse.rl \
+	$(shell find gtest-1.6.0)
 
 DISTCLEANFILES = \
 	src/cmudict_parse.cc \
