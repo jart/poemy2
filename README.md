@@ -29,7 +29,7 @@ Here's some example commands for using poemy:
 
 Want to hack poemy? First you'll need to install some additional dependencies:
 
-- `sudo apt-get install pkg-config autoconf automake`
+- `sudo apt-get install pkg-config autoconf automake ragel`
 - libunwind: <http://www.nongnu.org/libunwind/>
 - Google gperftools: <http://code.google.com/p/gperftools/>
 

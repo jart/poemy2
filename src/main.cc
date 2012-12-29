@@ -9,7 +9,7 @@
 
 #include <gflags/gflags.h>
 #include <glog/logging.h>
-#include <sparsehash/sparse_hash_set>
+#include <sparsehash/dense_hash_set>
 
 #include "poemy/cmudict.h"
 #include "poemy/corpus.h"
@@ -46,7 +46,7 @@ using std::pair;
 using std::string;
 using std::vector;
 
-typedef google::sparse_hash_set<string, poemy::MurmurHash3<string> > Set;
+typedef google::dense_hash_set<string, poemy::MurmurHash3<string> > Set;
 
 static Set g_bad_end_words;
 static Set g_bad_start_words;
@@ -117,7 +117,8 @@ MakeLine(const Meter& meter, const string& rhyme, Error* err) {
   ++g_count_MakeLine;
   for (int tries = 0; tries < FLAGS_tries; ++tries) {
     size_t pos = 0;
-    Set visited(FLAGS_tries * 10);
+    Set visited;
+    visited.set_empty_key("");
     vector<pair<string, Pronounce> > words;
     pair<string, Pronounce> p1, p2;
     g_chain.PickFirst(&p1.first, &p2.first);
@@ -154,6 +155,7 @@ MakeLine(const Meter& meter, const string& rhyme, Error* err) {
 void LoadWords(Set* out, const string& path) {
   std::ifstream input(path);
   PCHECK(input.good()) << path;
+  out->set_empty_key("");
   string word;
   while (std::getline(input, word, '\n')) {
     if (!word.empty()) {
