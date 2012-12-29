@@ -48,6 +48,13 @@ using std::vector;
 
 typedef google::dense_hash_set<string, poemy::MurmurHash3<string> > Set;
 
+struct Word {
+  Word(const string& word, const Pronounce* pronounce)
+      : word(word), pronounce(pronounce) {}
+  string word;
+  const Pronounce* pronounce;
+};
+
 static Set g_bad_end_words;
 static Set g_bad_start_words;
 static poemy::Markov g_chain;
@@ -60,7 +67,7 @@ void MakeWord(const string& word1,
               size_t pos,
               const Meter& meter,
               const string& rhyme,
-              vector<pair<string, Pronounce> >& words,
+              vector<std::unique_ptr<Word>>* words,
               Set* visited,
               Error* err) {
   ++g_count_MakeWord;
@@ -70,7 +77,7 @@ void MakeWord(const string& word1,
       return;
     }
     if (!rhyme.empty()) {
-      const string& last_word = words.back().first;
+      const string& last_word = words->back()->word;
       if (last_word == rhyme) {
         err->set_code(Error::kExhausted);
         return;
@@ -83,31 +90,29 @@ void MakeWord(const string& word1,
     return;
   }
   vector<string> lol = g_chain.Picks(word1, word2);
-  for (const auto& w3 : lol) {
-    string visited_key = word2 + '/' + w3;
+  for (const auto& word3 : lol) {
+    string visited_key = word2 + '/' + word3;
     if (visited->find(visited_key) != visited->end()) {
       continue;
     }
     visited->insert(std::move(visited_key));
-    const Pronounces& prons = (*g_dict)[w3];
+    const Pronounces& prons = (*g_dict)[word3];
     if (prons.empty()) {
       continue;
     }
-    pair<string, Pronounce> p3;
-    p3.first = w3;
-    p3.second = MatchMeter(prons, meter, pos);
-    if (p3.second.empty()) {
+    const Pronounce* pronounce = MatchMeter(prons, meter, pos);
+    if (!pronounce) {
       continue;
     }
-    words.push_back(p3);
-    pos += p3.second.size();
-    MakeWord(word2, p3.first, pos, meter, rhyme, words, visited, err);
+    words->emplace_back(new Word(word3, pronounce));
+    pos += pronounce->size();
+    MakeWord(word2, word3, pos, meter, rhyme, words, visited, err);
     if (err->Ok()) {
       return;
     }
     err->Reset();
-    pos -= words.back().second.size();
-    words.pop_back();
+    pos -= words->back()->pronounce->size();
+    words->pop_back();
   }
   err->set_code(Error::kExhausted);
 }
@@ -117,32 +122,35 @@ MakeLine(const Meter& meter, const string& rhyme, Error* err) {
   ++g_count_MakeLine;
   for (int tries = 0; tries < FLAGS_tries; ++tries) {
     size_t pos = 0;
+    vector<std::unique_ptr<Word> > words;
+    string word1;
+    string word2;
+    const Pronounce* pronounce1;
+    const Pronounce* pronounce2;
     Set visited;
+    g_chain.PickFirst(&word1, &word2);
+    if (g_bad_start_words.find(word1) != g_bad_start_words.end()) {
+      continue;
+    }
     visited.set_empty_key("");
-    vector<pair<string, Pronounce> > words;
-    pair<string, Pronounce> p1, p2;
-    g_chain.PickFirst(&p1.first, &p2.first);
-    if (g_bad_start_words.find(p1.first) != g_bad_start_words.end()) {
+    visited.insert(word1 + "/" + word2);
+    pronounce1 = MatchMeter((*g_dict)[word1], meter, pos);
+    if (!pronounce1) {
       continue;
     }
-    visited.insert(p1.first + "/" + p2.first);
-    p1.second = MatchMeter((*g_dict)[p1.first], meter, pos);
-    if (p1.second.empty()) {
+    pos += pronounce1->size();
+    pronounce2 = MatchMeter((*g_dict)[word2], meter, pos);
+    if (!pronounce2) {
       continue;
     }
-    words.push_back(p1);
-    pos += p1.second.size();
-    p2.second = MatchMeter((*g_dict)[p2.first], meter, pos);
-    if (p2.second.empty()) {
-      continue;
-    }
-    words.push_back(p2);
-    pos += p2.second.size();
-    MakeWord(p1.first, p2.first, pos, meter, rhyme, words, &visited, err);
+    pos += pronounce2->size();
+    words.emplace_back(new Word(word1, pronounce1));
+    words.emplace_back(new Word(word2, pronounce2));
+    MakeWord(word1, word2, pos, meter, rhyme, &words, &visited, err);
     if (err->Ok()) {
       vector<string> res;
-      for (const auto& wp : words) {
-        res.push_back(wp.first);
+      for (auto& wp : words) {
+        res.push_back(std::move(wp->word));
       }
       return res;
     }

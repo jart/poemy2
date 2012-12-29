@@ -53,16 +53,15 @@ TEST(PronounceTest, IsRhyme) {
 
 TEST(PronounceTest, MatchMeter) {
   Meter meter = {0, 1, 0, 1, 0, 1, 0, 1, 0, 1};
-  Pronounce emptypron = {};
-  ASSERT_EQ(emptypron, MatchMeter(passion, meter, 0));
-  ASSERT_EQ(passion[0], MatchMeter(passion, meter, 1));
-  ASSERT_EQ(emptypron, MatchMeter(passion, meter, 2));
-  ASSERT_EQ(passion[0], MatchMeter(passion, meter, 3));
-  ASSERT_EQ(acquainted[0], MatchMeter(acquainted, meter, 0));
-  ASSERT_EQ(emptypron, MatchMeter(acquainted, meter, 1));
-  ASSERT_EQ(acquainted2[1], MatchMeter(acquainted2, meter, 1));
-  ASSERT_EQ(emptypron, MatchMeter(acquainted, meter, 8));
-  ASSERT_EQ(acquainted2[2], MatchMeter(acquainted2, meter, 8));
+  ASSERT_EQ(nullptr, MatchMeter(passion, meter, 0));
+  ASSERT_EQ(&passion[0], MatchMeter(passion, meter, 1));
+  ASSERT_EQ(nullptr, MatchMeter(passion, meter, 2));
+  ASSERT_EQ(&passion[0], MatchMeter(passion, meter, 3));
+  ASSERT_EQ(&acquainted[0], MatchMeter(acquainted, meter, 0));
+  ASSERT_EQ(nullptr, MatchMeter(acquainted, meter, 1));
+  ASSERT_EQ(&acquainted2[1], MatchMeter(acquainted2, meter, 1));
+  ASSERT_EQ(nullptr, MatchMeter(acquainted, meter, 8));
+  ASSERT_EQ(&acquainted2[2], MatchMeter(acquainted2, meter, 8));
 }
 
 TEST(PronounceTest, ParsePhoneme) {

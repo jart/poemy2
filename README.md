@@ -19,11 +19,12 @@ Then build / install poemy as follows:
     ./configure
     make check -j4
 
-Here's some example commands for using poemy:
+Here's some example invocations of poemy:
 
     ./poemy
     ./poemy --help
     ./poemy --alsologtostderr --minloglevel=0
+    ./poemy --alsologtostderr --tries=500 --lines=40 --corpora=goth --dict=isle
 
 ## Developer Build
 

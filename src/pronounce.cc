@@ -66,7 +66,8 @@ bool IsRhyme(const Pronounces& prons1, const Pronounces& prons2) {
   return false;
 }
 
-Pronounce MatchMeter(const Pronounces& prons, const Meter& meter, size_t pos) {
+const Pronounce* MatchMeter(const Pronounces& prons, const Meter& meter,
+                            size_t pos) {
   const size_t remain = meter.size() - pos;
   for (const auto& pron : prons) {
     if (pron.size() > remain) {
@@ -81,10 +82,10 @@ Pronounce MatchMeter(const Pronounces& prons, const Meter& meter, size_t pos) {
       }
     }
     if (success) {
-      return pron;
+      return &pron;
     }
   }
-  return {};
+  return nullptr;
 }
 
 std::string PhonemeString(Phoneme phoneme) {
