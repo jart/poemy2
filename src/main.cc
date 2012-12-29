@@ -42,8 +42,8 @@ using poemy::Pronounces;
 using poemy::Syllable;
 using std::cout;
 using std::endl;
-using std::pair;
 using std::string;
+using std::unique_ptr;
 using std::vector;
 
 typedef google::dense_hash_set<string, poemy::MurmurHash3<string> > Set;
@@ -67,7 +67,7 @@ void MakeWord(const string& word1,
               size_t pos,
               const Meter& meter,
               const string& rhyme,
-              vector<std::unique_ptr<Word>>* words,
+              vector<unique_ptr<Word> >* words,
               Set* visited,
               Error* err) {
   ++g_count_MakeWord;
@@ -122,7 +122,7 @@ MakeLine(const Meter& meter, const string& rhyme, Error* err) {
   ++g_count_MakeLine;
   for (int tries = 0; tries < FLAGS_tries; ++tries) {
     size_t pos = 0;
-    vector<std::unique_ptr<Word> > words;
+    vector<unique_ptr<Word> > words;
     string word1;
     string word2;
     const Pronounce* pronounce1;
@@ -191,7 +191,7 @@ int main(int argc, char** argv) {
   } else {
     LOG(FATAL) << "Invalid dictionary: " << FLAGS_dict;
   }
-  std::unique_ptr<poemy::Dict> free_dict(g_dict);
+  unique_ptr<poemy::Dict> free_dict(g_dict);
 
   for (const auto& corpus : poemy::util::Split(FLAGS_corpora, ',')) {
     string corpus_path(FLAGS_corpora_path + "/" + corpus);
