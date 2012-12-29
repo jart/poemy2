@@ -13,8 +13,9 @@ TEST(MurmurHash3Test, IntegralIdentity) {
   MurmurHash3<int> hash;
   EXPECT_EQ(1u, hash(1));
   EXPECT_EQ(666u, hash(666));
-  EXPECT_EQ(1u, hash(true));
-  EXPECT_EQ(0u, hash(false));
+  MurmurHash3<bool> hash2;
+  EXPECT_EQ(1u, hash2(true));
+  EXPECT_EQ(0u, hash2(false));
 }
 
 TEST(MurmurHash3Test, String) {

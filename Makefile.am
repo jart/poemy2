@@ -10,6 +10,10 @@ EXTRA_DIST = \
 	config/pkg.m4 \
 	README.md
 
+DISTCLEANFILES = \
+	src/cmudict_parse.cc \
+	src/isledict_parse.cc
+
 bin_PROGRAMS = poemy
 noinst_LIBRARIES = libpoemy.a
 
@@ -31,13 +35,19 @@ poemy_LDADD = \
 
 libpoemy_a_SOURCES = \
 	src/MurmurHash3.cc \
+	src/cmudict.cc \
+	src/cmudict_parse.cc \
 	src/corpus.cc \
+	src/dict.cc \
 	src/error.cc \
 	src/isledict.cc \
+	src/isledict_parse.cc \
 	src/markov.cc \
+	src/poemy/cmudict.h \
 	src/poemy/corpus.h \
 	src/poemy/defines.h \
 	src/poemy/error.h \
+	src/poemy/dict.h \
 	src/poemy/hash.h \
 	src/poemy/isledict.h \
 	src/poemy/markov.h \
@@ -47,6 +57,13 @@ libpoemy_a_SOURCES = \
 	src/util.cc
 libpoemy_a_CPPFLAGS = $(poemy_CPPFLAGS)
 
+src/isledict_parse.cc: src/isledict_parse.rl
+src/cmudict_parse.cc: src/cmudict_parse.rl
+
+src/%.cc: src/%.rl
+	@echo "  RL    " $@;
+	@ragel -G2 -o $@ $<
+
 ######################################################################
 ## testing
 
@@ -55,9 +72,11 @@ TESTS = $(check_PROGRAMS)
 
 test_SOURCES = \
 	gtest-1.6.0/src/gtest-all.cc \
+	src/cmudict_test.cc \
 	src/corpus_test.cc \
 	src/error_test.cc \
 	src/hash_test.cc \
+	src/isledict_test.cc \
 	src/pronounce_test.cc \
 	src/test.cc
 test_CPPFLAGS = $(poemy_CPPFLAGS) -Igtest-1.6.0 -Igtest-1.6.0/include -pthread

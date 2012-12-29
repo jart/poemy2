@@ -10,6 +10,7 @@
 #include <glog/logging.h>
 #include <sparsehash/sparse_hash_set>
 
+#include "poemy/cmudict.h"
 #include "poemy/corpus.h"
 #include "poemy/error.h"
 #include "poemy/hash.h"
@@ -22,73 +23,43 @@ DEFINE_int32(lines, 30, "How many lines of poetry to generate.");
 DEFINE_int32(tries, 5, "How many times to crawl node before quitting.");
 DEFINE_string(corpora, "goth", "Comma-separated list of corpora to load.");
 DEFINE_string(corpora_path, "./corpora", "Path of corpus folders.");
-DEFINE_string(isledict, "./data/isledict/isledict0.2.txt",
-              "Path of isledict database file.");
+DEFINE_string(dict, "cmu", "Which pronunciation dictionary to use? This can "
+                  "either be 'isle' or 'cmu'");
+DEFINE_string(isledict_path, "./data/isledict/isledict0.2.txt",
+              "Path of isledict.txt database file.");
+DEFINE_string(cmudict_path, "./data/cmudict.txt",
+              "Path of cmudict.txt database file.");
 DEFINE_string(bad_end_words, "./data/bad_end_words.txt",
               "Path of new-line delimited bad end words file.");
 DEFINE_string(bad_start_words, "./data/bad_start_words.txt",
               "Path of new-line delimited bad start words file.");
 
 using poemy::Error;
+using poemy::Meter;
 using poemy::Pronounce;
 using poemy::Pronounces;
 using poemy::Syllable;
 using std::cout;
 using std::endl;
+using std::pair;
 using std::string;
 using std::vector;
 
-typedef vector<int> Meter;
 typedef google::sparse_hash_set<string, poemy::MurmurHash3<string> > Set;
 
 static Set g_bad_end_words;
 static Set g_bad_start_words;
 static poemy::Markov g_chain;
-static poemy::Isledict g_dict;
+static poemy::Dict* g_dict;
 static int g_count_MakeWord = 0;
 static int g_count_MakeLine = 0;
-
-Pronounce MatchMeter(const Pronounces& prons, const Meter& meter, size_t pos) {
-  const size_t remain = meter.size() - pos;
-  for (const auto& pron : prons) {
-    if (pron.size() > remain) {
-      continue;
-    }
-    bool success = true;
-    for (size_t n = 0; n < pron.size(); ++n) {
-      if (!(meter[pos + n] == pron[n].stress ||
-            (meter[pos + n] != 0 && pron[n].stress != 0))) {
-        success = false;
-        break;
-      }
-    }
-    if (success) {
-      return pron;
-    }
-  }
-  return {};
-}
-
-bool IsRhyme(const Pronounces& prons1, const Pronounces& prons2) {
-  for (const auto& pron1 : prons1) {
-    CHECK(pron1.size() > 0);
-    for (const auto& pron2 : prons2) {
-      CHECK(pron2.size() > 0);
-      if (pron1[pron1.size() - 1].phonemes ==
-          pron2[pron2.size() - 1].phonemes) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
 
 void MakeWord(const string& word1,
               const string& word2,
               size_t pos,
               const Meter& meter,
               const string& rhyme,
-              vector<std::pair<string, Pronounce> >& words,
+              vector<pair<string, Pronounce> >& words,
               Set* visited,
               Error* err) {
   ++g_count_MakeWord;
@@ -103,7 +74,7 @@ void MakeWord(const string& word1,
         err->set_code(Error::kExhausted);
         return;
       }
-      if (!IsRhyme(g_dict[last_word], g_dict[rhyme])) {
+      if (!IsRhyme((*g_dict)[last_word], (*g_dict)[rhyme])) {
         err->set_code(Error::kExhausted);
         return;
       }
@@ -117,11 +88,11 @@ void MakeWord(const string& word1,
       continue;
     }
     visited->insert(std::move(visited_key));
-    const Pronounces& prons = g_dict[w3];
+    const Pronounces& prons = (*g_dict)[w3];
     if (prons.empty()) {
       continue;
     }
-    std::pair<string, Pronounce> p3;
+    pair<string, Pronounce> p3;
     p3.first = w3;
     p3.second = MatchMeter(prons, meter, pos);
     if (p3.second.empty()) {
@@ -146,20 +117,20 @@ MakeLine(const Meter& meter, const string& rhyme, Error* err) {
   for (int tries = 0; tries < FLAGS_tries; ++tries) {
     size_t pos = 0;
     Set visited(FLAGS_tries * 10);
-    vector<std::pair<string, Pronounce> > words;
-    std::pair<string, Pronounce> p1, p2;
+    vector<pair<string, Pronounce> > words;
+    pair<string, Pronounce> p1, p2;
     g_chain.PickFirst(&p1.first, &p2.first);
     if (g_bad_start_words.find(p1.first) != g_bad_start_words.end()) {
       continue;
     }
     visited.insert(p1.first + "/" + p2.first);
-    p1.second = MatchMeter(g_dict[p1.first], meter, pos);
+    p1.second = MatchMeter((*g_dict)[p1.first], meter, pos);
     if (p1.second.empty()) {
       continue;
     }
     words.push_back(p1);
     pos += p1.second.size();
-    p2.second = MatchMeter(g_dict[p2.first], meter, pos);
+    p2.second = MatchMeter((*g_dict)[p2.first], meter, pos);
     if (p2.second.empty()) {
       continue;
     }
@@ -168,8 +139,8 @@ MakeLine(const Meter& meter, const string& rhyme, Error* err) {
     MakeWord(p1.first, p2.first, pos, meter, rhyme, words, &visited, err);
     if (err->Ok()) {
       vector<string> res;
-      for (const auto& pair : words) {
-        res.push_back(pair.first);
+      for (const auto& wp : words) {
+        res.push_back(wp.first);
       }
       return res;
     }
@@ -200,7 +171,16 @@ int main(int argc, char** argv) {
   LoadWords(&g_bad_end_words, FLAGS_bad_end_words);
   LoadWords(&g_bad_start_words, FLAGS_bad_start_words);
 
-  g_dict.Load(new std::ifstream(FLAGS_isledict));
+  if (FLAGS_dict == "isle") {
+    g_dict = new poemy::Isledict();
+    g_dict->Load(new std::ifstream(FLAGS_isledict_path));
+  } else if (FLAGS_dict == "cmu") {
+    g_dict = new poemy::Cmudict();
+    g_dict->Load(new std::ifstream(FLAGS_cmudict_path));
+  } else {
+    LOG(FATAL) << "Invalid dictionary: " << FLAGS_dict;
+  }
+  std::unique_ptr<poemy::Dict> free_dict(g_dict);
 
   for (const auto& corpus : poemy::util::Split(FLAGS_corpora, ',')) {
     string corpus_path(FLAGS_corpora_path + "/" + corpus);
@@ -219,14 +199,12 @@ int main(int argc, char** argv) {
     Error err;
     vector<string> line1 = MakeLine(meter, "", &err);
     if (!err.Ok()) {
-      LOG(WARNING) << "MakeLine() #1 failed: " << err;
       continue;
     }
     err.Reset();
     const string& rhyme = line1[line1.size() - 1];
     vector<string> line2 = MakeLine(meter, rhyme, &err);
     if (!err.Ok()) {
-      LOG(WARNING) << "MakeLine() #2 failed: " << err;
       continue;
     }
     for (const auto& str : line1) cout << str << " "; cout << endl;

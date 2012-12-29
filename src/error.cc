@@ -31,6 +31,8 @@ const std::string Error::message() const {
   switch (code_) {
     case Error::kOK:
       return "OK";
+    case Error::kError:
+      return "Error";
     case Error::kExhausted:
       return "Exhausted";
     default:

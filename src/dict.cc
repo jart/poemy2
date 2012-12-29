@@ -1,15 +1,15 @@
 // poemy - A poetry generator
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
-#include <glog/logging.h>
-#include <gtest/gtest.h>
+#include "poemy/dict.h"
 
-int main(int argc, char** argv) {
-  testing::InitGoogleTest(&argc, argv);
-  testing::FLAGS_gtest_death_test_style = "threadsafe";
-  google::InitGoogleLogging(argv[0]);
-  return RUN_ALL_TESTS();
+namespace poemy {
+
+Dict::Dict() {
+  pronounce_.set_empty_key("");
 }
+
+}  // namespace poemy
 
 // For Emacs:
 // Local Variables:

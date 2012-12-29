@@ -55,7 +55,7 @@ void RemoveDuplicatesFromStringlist(string* text, char delim) {
 vector<string> ListDir(const string& path) {
   vector<string> res;
   DIR* dir = opendir(path.c_str());
-  PCHECK(dir != NULL);
+  PCHECK(dir != NULL) << path;
   for (;;) {
     dirent* entry = readdir(dir);
     if (entry == nullptr) {
@@ -67,7 +67,7 @@ vector<string> ListDir(const string& path) {
     }
     res.push_back(fname);
   }
-  PCHECK(closedir(dir) == 0);
+  PCHECK(closedir(dir) == 0) << path;
   return res;
 }
 

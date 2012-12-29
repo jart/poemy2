@@ -1,25 +1,25 @@
 // poemy - A poetry generator
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
-#ifndef POEMY_ISLEDICT_H_
-#define POEMY_ISLEDICT_H_
+#ifndef POEMY_CMUDICT_H_
+#define POEMY_CMUDICT_H_
 
 #include <poemy/dict.h>
 
 namespace poemy {
 
-class Isledict : public Dict {
+class Cmudict : public Dict {
  public:
   // I take ownership of 'input'.
   virtual void Load(std::istream* input);
  private:
-  POEMY_FRIEND_TEST(IsledictTest, Parse);
+  POEMY_FRIEND_TEST(CmudictTest, Parse);
   bool Parse(const std::string& line, std::string* word, Pronounce *res) const;
 };
 
 }  // namespace poemy
 
-#endif  // POEMY_ISLEDICT_H_
+#endif  // POEMY_CMUDICT_H_
 
 // For Emacs:
 // Local Variables:

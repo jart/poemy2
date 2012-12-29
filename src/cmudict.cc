@@ -1,7 +1,7 @@
 // poemy - A poetry generator
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
-#include "poemy/isledict.h"
+#include "poemy/cmudict.h"
 #include <chrono>
 #include <memory>
 #include <glog/logging.h>
@@ -13,10 +13,11 @@ using std::chrono::high_resolution_clock;
 
 namespace poemy {
 
-void Isledict::Load(std::istream* input) {
+void Cmudict::Load(std::istream* input) {
   std::unique_ptr<std::istream> free_input(input);
   PCHECK(input->good());
-  string line, word;
+  string line;
+  string word;
   auto begin = high_resolution_clock::now();
   while (std::getline(*input, line).good()) {
     Pronounce pron;
@@ -27,7 +28,7 @@ void Isledict::Load(std::istream* input) {
   }
   auto end = high_resolution_clock::now();
   auto elapsed = duration_cast<std::chrono::milliseconds>(end - begin);
-  LOG(INFO) << "loaded isledict in " << elapsed.count() << "ms";
+  LOG(INFO) << "loaded cmudict in " << elapsed.count() << "ms";
 }
 
 }  // namespace poemy

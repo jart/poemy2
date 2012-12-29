@@ -7,6 +7,86 @@
 
 namespace poemy {
 
+bool IsVowel(Phoneme phoneme) {
+  switch (phoneme) {
+    case kAA:
+    case kAE:
+    case kAH:
+    case kAO:
+    case kAW:
+    case kAY:
+    case kEH:
+    case kER:
+    case kEY:
+    case kIH:
+    case kIY:
+    case kOW:
+    case kOY:
+    case kUH:
+    case kUW:
+      return true;
+    default:
+      return false;
+  }
+}
+
+bool IsRhyme(const Pronounces& prons1, const Pronounces& prons2) {
+  for (const auto& pron1 : prons1) {
+    for (const auto& pron2 : prons2) {
+      const Syllable& syl1 = pron1.back();
+      const Syllable& syl2 = pron2.back();
+      int n1, len1 = syl1.phonemes.size();
+      int n2, len2 = syl2.phonemes.size();
+      // Skip over the initial consonant phonemes.
+      for (n1 = 0; n1 < len1; n1++) {
+        if (IsVowel(syl1.phonemes[n1])) {
+          break;
+        }
+      }
+      for (n2 = 0; n2 < len2; n2++) {
+        if (IsVowel(syl2.phonemes[n2])) {
+          break;
+        }
+      }
+      // Now all the remaining phonemes must match.
+      if (len1 - n1 == len2 - n2) {
+        bool equal = true;
+        for (; n1 < len1; n1++, n2++) {
+          if (syl1.phonemes[n1] != syl2.phonemes[n2]) {
+            equal = false;
+            break;
+          }
+        }
+        if (equal) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+
+Pronounce MatchMeter(const Pronounces& prons, const Meter& meter, size_t pos) {
+  const size_t remain = meter.size() - pos;
+  for (const auto& pron : prons) {
+    if (pron.size() > remain) {
+      continue;
+    }
+    bool success = true;
+    for (size_t n = 0; n < pron.size(); ++n) {
+      if (!(meter[pos + n] == pron[n].stress ||
+            (meter[pos + n] != 0 && pron[n].stress != 0))) {
+        success = false;
+        break;
+      }
+    }
+    if (success) {
+      return pron;
+    }
+  }
+  return {};
+}
+
 std::string PhonemeString(Phoneme phoneme) {
   switch (phoneme) {
     case kAA: return "AA";
@@ -48,7 +128,8 @@ std::string PhonemeString(Phoneme phoneme) {
     case kY:  return "Y";
     case kZ:  return "Z";
     case kZH: return "ZH";
-    default:  CHECK(false) << "Bad phoneme code: " << phoneme;
+    default:
+      CHECK(false) << "Bad phoneme code: " << static_cast<int>(phoneme);
   }
 }
 
@@ -158,6 +239,30 @@ Phoneme ParsePhoneme(const std::string& str) {
     default:
       CHECK(false) << "Bad phoneme: " << str;
   }
+  CHECK(false);
+  return kAA;  // Make the compiler happy.
+}
+
+std::ostream& operator<<(std::ostream& os, const Phoneme& phoneme) {
+  if (phoneme >= kAA && phoneme <= kZH) {
+    return os << PhonemeString(phoneme);
+  } else {
+    return os << "??";
+  }
+}
+
+std::ostream& operator<<(std::ostream& os, const Syllable& syl) {
+  bool first = true;
+  os << syl.stress << " ";
+  for (const auto& phoneme : syl.phonemes) {
+    if (first) {
+      first = false;
+    } else {
+      os << " ";
+    }
+    os << phoneme;
+  }
+  return os;
 }
 
 }  // namespace poemy

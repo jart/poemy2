@@ -16,7 +16,8 @@ class Error {
  public:
   enum Code {
     kOK = 0,
-    kExhausted = 1,
+    kError = 1,
+    kExhausted = 2,
   };
 
   Error() : code_(kOK) {}

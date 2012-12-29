@@ -24,6 +24,7 @@ Here's some example commands for using poemy:
 
     poemy
     poemy --help
+    poemy --alsologtostderr --minloglevel=0
 
 ## Developers
 

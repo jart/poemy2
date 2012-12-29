@@ -4,6 +4,7 @@
 #ifndef POEMY_PRONOUNCE_H_
 #define POEMY_PRONOUNCE_H_
 
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -54,13 +55,23 @@ enum Phoneme {
 struct Syllable {
   std::vector<Phoneme> phonemes;
   int stress;
+  bool operator==(const Syllable& other) const {
+    return (stress == other.stress && phonemes == other.phonemes);
+  }
 };
 
 typedef std::vector<Syllable> Pronounce;
 typedef std::vector<Pronounce> Pronounces;
+typedef std::vector<int> Meter;
 
+bool IsVowel(Phoneme phoneme);
+bool IsRhyme(const Pronounces& prons1, const Pronounces& prons2);
+Pronounce MatchMeter(const Pronounces& prons, const Meter& meter, size_t pos);
 std::string PhonemeString(Phoneme phoneme);
 Phoneme ParsePhoneme(const std::string& str);
+
+std::ostream& operator<<(std::ostream& os, const Phoneme& phoneme);
+std::ostream& operator<<(std::ostream& os, const Syllable& syl);
 
 }  // namespace poemy
 
