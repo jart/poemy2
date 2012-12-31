@@ -9,14 +9,17 @@ pronunciation dictionary.
 
 First you need to install some dependencies:
 
-- `sudo apt-get install build-essential`
+- `sudo apt-get install build-essential pkg-config autoconf automake ragel`
 - Google gflags: <http://code.google.com/p/gflags/>
 - Google glog: <http://code.google.com/p/google-glog/>
 - Google SparseHash: <http://code.google.com/p/sparsehash/>
+- Optional: libunwind: <http://www.nongnu.org/libunwind/>
+- Optional: Google gperftools: <http://code.google.com/p/gperftools/>
 
 Then build / install poemy as follows:
 
-    ./configure
+    ./autogen.sh
+    ./configure CPPFLAGS="-Wall -Werror -pipe -march=native"
     make check -j4
 
 Here's some example invocations of poemy:
@@ -25,28 +28,3 @@ Here's some example invocations of poemy:
     ./poemy --help
     ./poemy --alsologtostderr --minloglevel=0
     ./poemy --alsologtostderr --tries=500 --lines=40 --corpora=goth --dict=isle
-
-## Developer Build
-
-Want to hack poemy? First you'll need to install some additional dependencies:
-
-- `sudo apt-get install pkg-config autoconf automake ragel`
-- libunwind: <http://www.nongnu.org/libunwind/>
-- Google gperftools: <http://code.google.com/p/gperftools/>
-
-Then create a developers build:
-
-    ./autogen.sh
-    ./configure CPPFLAGS="-O0 -g3 -fno-inline -Wall -pipe -march=native"
-    make check -j4
-
-Here's how to check for leaks:
-
-    HEAPCHECK=normal ./poemy
-
-Here's how to do a heap profile:
-
-    HEAPPROFILE=/tmp/heap ./poemy
-    pprof --gif poemy /tmp/heap.* >/tmp/heap.gif
-    chrome /tmp/heap.gif
-    rm /tmp/heap.*

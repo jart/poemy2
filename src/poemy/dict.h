@@ -8,6 +8,7 @@
 #include <istream>
 
 #include <sparsehash/dense_hash_map>
+
 #include <poemy/defines.h>
 #include <poemy/hash.h>
 #include <poemy/pronounce.h>
@@ -16,7 +17,7 @@ namespace poemy {
 
 class Dict {
  public:
-  Dict();
+  explicit Dict();
   virtual void Load(std::istream* input) = 0;
   const Pronounces& operator[](const std::string& word) {
     return pronounce_[word];

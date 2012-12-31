@@ -2,22 +2,17 @@
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
 #include "poemy/isledict.h"
-#include <chrono>
 #include <memory>
 #include <glog/logging.h>
-
-using std::string;
-using std::vector;
-using std::chrono::duration_cast;
-using std::chrono::high_resolution_clock;
+#include "poemy/timeit.h"
 
 namespace poemy {
 
 void Isledict::Load(std::istream* input) {
+  Timeit timeit("Isledict::Load()");
   std::unique_ptr<std::istream> free_input(input);
   PCHECK(input->good());
-  string line, word;
-  auto begin = high_resolution_clock::now();
+  std::string line, word;
   while (std::getline(*input, line).good()) {
     Pronounce pron;
     if (!Parse(line, &word, &pron)) {
@@ -25,9 +20,6 @@ void Isledict::Load(std::istream* input) {
     }
     pronounce_[word].push_back(std::move(pron));
   }
-  auto end = high_resolution_clock::now();
-  auto elapsed = duration_cast<std::chrono::milliseconds>(end - begin);
-  LOG(INFO) << "loaded isledict in " << elapsed.count() << "ms";
 }
 
 }  // namespace poemy

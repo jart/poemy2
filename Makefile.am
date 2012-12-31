@@ -55,8 +55,10 @@ libpoemy_a_SOURCES = \
 	src/poemy/isledict.h \
 	src/poemy/markov.h \
 	src/poemy/pronounce.h \
+	src/poemy/timeit.h \
 	src/poemy/util.h \
 	src/pronounce.cc \
+	src/timeit.cc \
 	src/util.cc
 libpoemy_a_CPPFLAGS = $(poemy_CPPFLAGS)
 

@@ -15,7 +15,9 @@ using std::vector;
 
 namespace poemy {
 
-Markov::Markov() : random_(system_clock::now().time_since_epoch().count()) {}
+Markov::Markov()
+    : random_(system_clock::now().time_since_epoch().count()) {
+}
 
 void Markov::Load(Corpus* corp) {
   std::unique_ptr<Corpus> free_corp(corp);

@@ -9,8 +9,9 @@
 #include <vector>
 
 #include <sparsehash/sparse_hash_map>
-#include <poemy/hash.h>
+
 #include <poemy/defines.h>
+#include <poemy/hash.h>
 
 namespace poemy {
 
@@ -18,7 +19,7 @@ class Corpus;
 
 class Markov {
  public:
-  Markov();
+  explicit Markov();
   // I take ownership of 'corp'.
   void Load(Corpus* corp);
   void LoadDone();

@@ -81,7 +81,7 @@ void MakeWord(const string& word1,
         err->set_code(Error::kExhausted);
         return;
       }
-      if (!IsRhyme((*g_dict)[last_word], (*g_dict)[rhyme])) {
+      if (!poemy::IsRhyme((*g_dict)[last_word], (*g_dict)[rhyme])) {
         err->set_code(Error::kExhausted);
         return;
       }
@@ -99,7 +99,7 @@ void MakeWord(const string& word1,
     if (prons.empty()) {
       continue;
     }
-    const Pronounce* pronounce = MatchMeter(prons, meter, pos);
+    const Pronounce* pronounce = poemy::MatchMeter(prons, meter, pos);
     if (!pronounce) {
       continue;
     }
@@ -133,12 +133,12 @@ MakeLine(const Meter& meter, const string& rhyme, Error* err) {
     }
     visited.set_empty_key("");
     visited.insert(word1 + "/" + word2);
-    pronounce1 = MatchMeter((*g_dict)[word1], meter, pos);
+    pronounce1 = poemy::MatchMeter((*g_dict)[word1], meter, pos);
     if (!pronounce1) {
       continue;
     }
     pos += pronounce1->size();
-    pronounce2 = MatchMeter((*g_dict)[word2], meter, pos);
+    pronounce2 = poemy::MatchMeter((*g_dict)[word2], meter, pos);
     if (!pronounce2) {
       continue;
     }
@@ -191,6 +191,7 @@ int main(int argc, char** argv) {
     LOG(FATAL) << "Invalid word dict: " << FLAGS_dict;
   }
   std::unique_ptr<poemy::Dict> free_dict(g_dict);
+  return 0;
 
   for (const auto& corpus : poemy::util::Split(FLAGS_corpora, ',')) {
     string corpus_path(FLAGS_corpora_path + "/" + corpus);
@@ -206,7 +207,7 @@ int main(int argc, char** argv) {
   using std::chrono::high_resolution_clock;
   auto begin = high_resolution_clock::now();
 
-  poemy::util::CpuProfilerStart();
+  // poemy::util::CpuProfilerStart();
   const Meter meter = {0, 1, 0, 1, 0, 1, 0, 1, 0, 1};
   int n = 0;
   while (n < FLAGS_lines) {
@@ -225,7 +226,7 @@ int main(int argc, char** argv) {
     for (const auto& str : line2) cout << str << " "; cout << endl;
     n += 2;
   }
-  poemy::util::CpuProfilerStop();
+  // poemy::util::CpuProfilerStop();
 
   auto end = high_resolution_clock::now();
   auto elapsed = duration_cast<std::chrono::milliseconds>(end - begin);

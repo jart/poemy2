@@ -21,7 +21,6 @@ bool Cmudict::Parse(const string& line, string* word, Pronounce *res) const {
   const char* f = &line.front();
   const char* p = f;
   const char* pe = p + line.size();
-  const char* eof = pe;
   Syllable* syllable;
   bool found_vowel = false;
   Phoneme phoneme;
