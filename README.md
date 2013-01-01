@@ -28,3 +28,4 @@ Here's some example invocations of poemy:
     ./poemy --help
     ./poemy --alsologtostderr --minloglevel=0
     ./poemy --alsologtostderr --tries=500 --lines=40 --corpora=goth --dict=isle
+    ulimit -c unlimited

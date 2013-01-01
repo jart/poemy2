@@ -72,7 +72,13 @@ void Markov::PickFirst(string* o_word1, string* o_word2) {
 }
 
 const vector<string>& Markov::Picks(const string& word1, const string& word2) {
-  return chain_[word1 + kDelimiter + word2];
+  static vector<string> empty;
+  auto locate = chain_.find(word1 + kDelimiter + word2);
+  if (locate == chain_.end()) {
+    return empty;
+  } else {
+    return locate->second;
+  }
   // vector<string> choices = chain_[word1 + kDelimiter + word2];
   // std::random_shuffle(std::begin(choices), std::end(choices));
   // return choices;

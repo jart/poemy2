@@ -4,31 +4,18 @@
 #ifndef POEMY_DICT_H_
 #define POEMY_DICT_H_
 
-#include <string>
 #include <istream>
-
-#include <sparsehash/dense_hash_map>
+#include <string>
 
 #include <poemy/defines.h>
-#include <poemy/hash.h>
 #include <poemy/pronounce.h>
 
 namespace poemy {
 
 class Dict {
  public:
-  explicit Dict();
   virtual void Load(std::istream* input) = 0;
-  const Pronounces& operator[](const std::string& word) {
-    return pronounce_[word];
-  }
-
- protected:
-  typedef MurmurHash3<std::string> Hasher;
-  google::dense_hash_map<const std::string, Pronounces, Hasher> pronounce_;
-
- private:
-  POEMY_DISALLOW_COPY_AND_ASSIGN(Dict);
+  virtual const Pronounces& operator[](const std::string& word) = 0;
 };
 
 }  // namespace poemy

@@ -4,17 +4,30 @@
 #ifndef POEMY_ISLEDICT_H_
 #define POEMY_ISLEDICT_H_
 
+#include <sparsehash/dense_hash_map>
+
 #include <poemy/dict.h>
+#include <poemy/hash.h>
 
 namespace poemy {
 
 class Isledict : public Dict {
  public:
+  Isledict();
   // I take ownership of 'input'.
   virtual void Load(std::istream* input);
+  virtual const Pronounces& operator[](const std::string& word) {
+    return pronounce_[word];
+  }
+
  private:
-  POEMY_FRIEND_TEST(IsledictTest, Parse);
+  typedef MurmurHash3<std::string> Hasher;
+  typedef google::dense_hash_map<const std::string, Pronounces, Hasher> Map;
+  Map pronounce_;
   bool Parse(const std::string& line, std::string* word, Pronounce *res) const;
+
+  POEMY_FRIEND_TEST(IsledictTest, Parse);
+  POEMY_DISALLOW_COPY_AND_ASSIGN(Isledict);
 };
 
 }  // namespace poemy

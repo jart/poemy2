@@ -2,11 +2,14 @@
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
 #include "poemy/isledict.h"
-#include <memory>
 #include <glog/logging.h>
 #include "poemy/timeit.h"
 
 namespace poemy {
+
+Isledict::Isledict() {
+  pronounce_.set_empty_key("");
+}
 
 void Isledict::Load(std::istream* input) {
   Timeit timeit("Isledict::Load()");

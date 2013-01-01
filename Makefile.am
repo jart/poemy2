@@ -40,20 +40,21 @@ libpoemy_a_SOURCES = \
 	src/cmudict_parse.cc \
 	src/cmudict_parse.rl \
 	src/corpus.cc \
-	src/dict.cc \
 	src/error.cc \
 	src/isledict.cc \
 	src/isledict_parse.cc \
 	src/isledict_parse.rl \
 	src/markov.cc \
+	src/memoryfile.cc \
 	src/poemy/cmudict.h \
 	src/poemy/corpus.h \
 	src/poemy/defines.h \
-	src/poemy/error.h \
 	src/poemy/dict.h \
+	src/poemy/error.h \
 	src/poemy/hash.h \
 	src/poemy/isledict.h \
 	src/poemy/markov.h \
+	src/poemy/memoryfile.h \
 	src/poemy/pronounce.h \
 	src/poemy/timeit.h \
 	src/poemy/util.h \

@@ -8,6 +8,10 @@
 
 namespace poemy {
 
+Cmudict::Cmudict() {
+  pronounce_.set_empty_key("");
+}
+
 void Cmudict::Load(std::istream* input) {
   Timeit timeit("Cmudict::Load()");
   std::unique_ptr<std::istream> free_input(input);

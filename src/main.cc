@@ -17,6 +17,7 @@
 #include "poemy/hash.h"
 #include "poemy/isledict.h"
 #include "poemy/markov.h"
+#include "poemy/memoryfile.h"
 #include "poemy/util.h"
 #include "poemy/pronounce.h"
 
@@ -88,9 +89,8 @@ void MakeWord(const string& word1,
     }
     return;
   }
-  const vector<string>& picks = g_chain.Picks(word1, word2);
-  for (const auto& word3 : picks) {
-    string visited_key = word2 + '/' + word3;
+  for (const auto& word3 : g_chain.Picks(word1, word2)) {
+    string visited_key = word2 + "/" + word3;
     if (visited->find(visited_key) != visited->end()) {
       continue;
     }
@@ -191,7 +191,6 @@ int main(int argc, char** argv) {
     LOG(FATAL) << "Invalid word dict: " << FLAGS_dict;
   }
   std::unique_ptr<poemy::Dict> free_dict(g_dict);
-  return 0;
 
   for (const auto& corpus : poemy::util::Split(FLAGS_corpora, ',')) {
     string corpus_path(FLAGS_corpora_path + "/" + corpus);
