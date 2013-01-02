@@ -43,10 +43,13 @@ using poemy::Pronounces;
 using poemy::Syllable;
 using std::cout;
 using std::endl;
+using std::pair;
 using std::string;
 using std::vector;
 
 typedef google::dense_hash_set<string, poemy::MurmurHash3<string> > Set;
+typedef google::dense_hash_set<
+  pair<string, string>, poemy::MurmurHash3<pair<string, string> > > VisitedSet;
 
 struct Word {
   Word(const string& word, const Pronounce* pronounce)
@@ -68,7 +71,7 @@ void MakeWord(const string& word1,
               const Meter& meter,
               const string& rhyme,
               vector<Word>* words,
-              Set* visited,
+              VisitedSet* visited,
               Error* err) {
   ++g_count_MakeWord;
   if (pos == meter.size()) {
@@ -89,12 +92,11 @@ void MakeWord(const string& word1,
     }
     return;
   }
-  for (const auto& word3 : g_chain.Picks(word1, word2)) {
-    string visited_key = word2 + "/" + word3;
-    if (visited->find(visited_key) != visited->end()) {
+  for (const auto& word3 : g_chain.Picks({word1, word2})) {
+    if (visited->find({word2, word3}) != visited->end()) {
       continue;
     }
-    visited->insert(std::move(visited_key));
+    visited->insert({word2, word3});
     const Pronounces& prons = (*g_dict)[word3];
     if (prons.empty()) {
       continue;
@@ -122,17 +124,17 @@ MakeLine(const Meter& meter, const string& rhyme, Error* err) {
   for (int tries = 0; tries < FLAGS_tries; ++tries) {
     size_t pos = 0;
     vector<Word> words;
-    string word1;
-    string word2;
     const Pronounce* pronounce1;
     const Pronounce* pronounce2;
-    Set visited;
-    g_chain.PickFirst(&word1, &word2);
+    VisitedSet visited;
+    const pair<string, string>& first_words = g_chain.PickFirst();
+    const string& word1 = first_words.first;
+    const string& word2 = first_words.second;
     if (g_bad_start_words.find(word1) != g_bad_start_words.end()) {
       continue;
     }
-    visited.set_empty_key("");
-    visited.insert(word1 + "/" + word2);
+    visited.set_empty_key({"", ""});
+    visited.insert({word1, word2});
     pronounce1 = poemy::MatchMeter((*g_dict)[word1], meter, pos);
     if (!pronounce1) {
       continue;

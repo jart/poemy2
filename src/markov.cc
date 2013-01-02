@@ -9,14 +9,15 @@
 #include <glog/logging.h>
 #include "poemy/corpus.h"
 
-using std::chrono::system_clock;
+using std::pair;
 using std::string;
 using std::vector;
 
 namespace poemy {
 
 Markov::Markov()
-    : random_(system_clock::now().time_since_epoch().count()) {
+    : random_(std::chrono::system_clock::now().time_since_epoch().count()) {
+  chain_.set_empty_key({"", ""});
 }
 
 void Markov::Load(Corpus* corp) {
@@ -39,7 +40,7 @@ void Markov::Load(Corpus* corp) {
         break;
       }
       CHECK(w3[0] != '\0');
-      chain_[w1 + kDelimiter + w2].push_back(w3);
+      chain_[{w1, w2}].emplace_back(w3);
       std::swap(w1, w2);
       std::swap(w2, w3);
     }
@@ -50,34 +51,25 @@ void Markov::LoadDone() {
   CHECK(chain_.size() > 0) << "You need to actually load some data.";
   keys_.clear();
   keys_.reserve(chain_.size());
-  for (auto& pair : chain_) {
-    std::unique(std::begin(pair.second), std::end(pair.second));
-    keys_.push_back(pair.first);
+  for (auto& ent : chain_) {
+    std::unique(std::begin(ent.second), std::end(ent.second));
+    ent.second.shrink_to_fit();
+    keys_.emplace_back(ent.first);
   }
 }
 
-void Markov::PickFirst(string* o_word1, string* o_word2) {
+const pair<string, string>& Markov::PickFirst() const {
   std::uniform_int_distribution<size_t> distrib(0, keys_.size() - 1);
-  const string& key = keys_[distrib(random_)];
-  o_word1->reserve(16);
-  o_word2->reserve(16);
-  string* out = o_word1;
-  for (char ch : key) {
-    if (ch == kDelimiter) {
-      out = o_word2;
-      continue;
-    }
-    *out += ch;
-  }
+  return keys_[distrib(random_)];
 }
 
-const vector<string>& Markov::Picks(const string& word1, const string& word2) {
+const vector<string>& Markov::Picks(const pair<string, string>& words) const {
   static vector<string> empty;
-  auto locate = chain_.find(word1 + kDelimiter + word2);
-  if (locate == chain_.end()) {
-    return empty;
+  auto ent = chain_.find(words);
+  if (ent != chain_.end()) {
+    return ent->second;
   } else {
-    return locate->second;
+    return empty;
   }
   // vector<string> choices = chain_[word1 + kDelimiter + word2];
   // std::random_shuffle(std::begin(choices), std::end(choices));

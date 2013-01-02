@@ -6,9 +6,10 @@
 
 #include <random>
 #include <string>
+#include <utility>
 #include <vector>
 
-#include <sparsehash/sparse_hash_map>
+#include <sparsehash/dense_hash_map>
 
 #include <poemy/defines.h>
 #include <poemy/hash.h>
@@ -23,15 +24,17 @@ class Markov {
   // I take ownership of 'corp'.
   void Load(Corpus* corp);
   void LoadDone();
-  void PickFirst(std::string* o_word1, std::string* o_word2);
-  const std::vector<std::string>& Picks(const std::string& word1,
-                                        const std::string& word2);
+  const std::pair<std::string, std::string>& PickFirst() const;
+  const std::vector<std::string>& Picks(
+      const std::pair<std::string, std::string>& words) const;
 
  private:
-  typedef MurmurHash3<std::string> Hasher;
-  google::sparse_hash_map<std::string, std::vector<std::string>, Hasher> chain_;
-  std::vector<std::string> keys_;
-  std::mt19937 random_;
+  typedef MurmurHash3<std::pair<std::string, std::string> > Hasher;
+  typedef google::dense_hash_map<std::pair<std::string, std::string>,
+                                 std::vector<std::string>, Hasher> Map;
+  Map chain_;
+  std::vector<std::pair<std::string, std::string> > keys_;
+  mutable std::mt19937 random_;
   static const char kDelimiter = ',';
 
   POEMY_DISALLOW_COPY_AND_ASSIGN(Markov);

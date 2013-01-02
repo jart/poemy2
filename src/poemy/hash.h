@@ -1,13 +1,15 @@
 // poemy - A poetry generator
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
-// This file makes MurmurHash3 behave like std::hash.
+// This file makes MurmurHash3 behave like std::hash. The only things you can
+// hash right now are integral types, strings, and pairs.
 
 #ifndef POEMY_HASH_H_
 #define POEMY_HASH_H_
 
 #include <cstdint>
 #include <string>
+#include <utility>
 
 #include <poemy/defines.h>
 
@@ -58,6 +60,20 @@ struct MurmurHash3<std::string> : public MurmurHash3Base<size_t, std::string> {
     MurmurHash3_x86_32(val.data(), val.size(), kSeed, &out);
     return out;
   }
+};
+
+template<typename a, typename b>
+struct MurmurHash3<std::pair<a, b> >
+    : public MurmurHash3Base<size_t, std::pair<a, b> > {
+  inline size_t operator()(const std::pair<a, b>& val) const {
+    return ah(val.first) ^ bh(val.second);
+  }
+  inline size_t operator()(const std::pair<const a&, const b&>& val) const {
+    return ah(val.first) ^ bh(val.second);
+  }
+ private:
+  MurmurHash3<a> ah;
+  MurmurHash3<b> bh;
 };
 
 }  // namespace poemy
