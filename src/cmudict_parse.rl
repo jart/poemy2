@@ -92,11 +92,13 @@ bool Cmudict::Parse(const string& line, string* word, Pronounce *res) const {
             | "W"  @{ phoneme = kW;  } @phoneme_add_consonant
             | "Y"  @{ phoneme = kY;  } @phoneme_add_consonant
             | "Z"  @{ phoneme = kZ;  } @phoneme_add_consonant
-            | "ZH" @{ phoneme = kZH; } @phoneme_add_consonant ;
+            | "ZH" @{ phoneme = kZH; } @phoneme_add_consonant
+            ;
 
     stress = "0" @{ syllable->stress = 0; }
            | "1" @{ syllable->stress = 1; }
-           | "2" @{ syllable->stress = 2; } ;
+           | "2" @{ syllable->stress = 2; }
+           ;
 
     word_char = ( upper $word_append_lower ) | ( ( "'" | "-" ) $word_append ) ;
     word      = word_char+ ( "(" digit ")" )? ;

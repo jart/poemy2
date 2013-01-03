@@ -118,8 +118,7 @@ void MakeWord(const string& word1,
   err->set_code(Error::kExhausted);
 }
 
-vector<string>
-MakeLine(const Meter& meter, const string& rhyme, Error* err) {
+vector<string> MakeLine(const Meter& meter, const string& rhyme, Error* err) {
   ++g_count_MakeLine;
   for (int tries = 0; tries < FLAGS_tries; ++tries) {
     size_t pos = 0;

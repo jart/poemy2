@@ -80,11 +80,13 @@ bool Isledict::Parse(const string& line, string* word, Pronounce *res) const {
             | "w"  @{ syllable->phonemes.push_back(kW);  }
             | "y"  @{ syllable->phonemes.push_back(kY);  }
             | "z"  @{ syllable->phonemes.push_back(kZ);  }
-            | "zh" @{ syllable->phonemes.push_back(kZH); } ;
+            | "zh" @{ syllable->phonemes.push_back(kZH); }
+            ;
 
     stress = "0" @{ syllable->stress = 0; }
            | "1" @{ syllable->stress = 1; }
-           | "2" @{ syllable->stress = 2; } ;
+           | "2" @{ syllable->stress = 2; }
+           ;
 
     word      = ( word_char+ ) $word_append;
     info      = "(" info_char* ")" ;

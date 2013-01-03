@@ -420,15 +420,15 @@ case 8:
 	}
 	goto st0;
 tr38:
-#line 85 "src/isledict_parse.rl"
+#line 86 "src/isledict_parse.rl"
 	{ syllable->stress = 0; }
 	goto st9;
 tr39:
-#line 86 "src/isledict_parse.rl"
+#line 87 "src/isledict_parse.rl"
 	{ syllable->stress = 1; }
 	goto st9;
 tr40:
-#line 87 "src/isledict_parse.rl"
+#line 88 "src/isledict_parse.rl"
 	{ syllable->stress = 2; }
 	goto st9;
 st9:
@@ -954,7 +954,7 @@ case 22:
 	_out: {}
 	}
 
-#line 99 "src/isledict_parse.rl"
+#line 101 "src/isledict_parse.rl"
 
 
   return (cs != isledict_error);
