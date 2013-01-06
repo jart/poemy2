@@ -1,7 +1,6 @@
 // poemy - A poetry generator
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
-#include <csignal>
 #include <chrono>
 #include <fstream>
 #include <iostream>
@@ -161,12 +160,6 @@ void LoadWords(Set* out, const string& path) {
   }
 }
 
-static bool g_running = true;
-void on_sigint(int sig) {
-  LOG(INFO) << "got sigint";
-  g_running = false;
-}
-
 int main(int argc, char** argv) {
   google::SetUsageMessage(PACKAGE_NAME " [FLAGS]");
   google::SetVersionString(VERSION);
@@ -206,7 +199,7 @@ int main(int argc, char** argv) {
   poemy::util::CpuProfilerStart();
   const Meter meter = {0, 1, 0, 1, 0, 1, 0, 1, 0, 1};
   int lines = 0;
-  while (g_running && lines < FLAGS_lines) {
+  while (lines < FLAGS_lines) {
     vector<Word> line1;
     vector<Word> line2;
     if (!MakeLine(meter, nullptr, &line1) ||
