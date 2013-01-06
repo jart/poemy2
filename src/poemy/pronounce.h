@@ -66,6 +66,7 @@ typedef std::vector<Pronounce> Pronounces;
 typedef std::vector<int> Meter;
 
 bool IsVowel(Phoneme phoneme);
+bool IsRhyme(const Pronounce& pron1, const Pronounce& pron2);
 bool IsRhyme(const Pronounces& prons1, const Pronounces& prons2);
 const Pronounce* MatchMeter(const Pronounces& prons, const Meter& meter,
                             size_t pos);

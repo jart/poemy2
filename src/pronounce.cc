@@ -30,36 +30,42 @@ bool IsVowel(Phoneme phoneme) {
   }
 }
 
+bool IsRhyme(const Pronounce& pron1, const Pronounce& pron2) {
+  const Syllable& syl1 = pron1.back();
+  const Syllable& syl2 = pron2.back();
+  int n1, len1 = syl1.phonemes.size();
+  int n2, len2 = syl2.phonemes.size();
+  // Skip over the initial consonant phonemes.
+  for (n1 = 0; n1 < len1; n1++) {
+    if (IsVowel(syl1.phonemes[n1])) {
+      break;
+    }
+  }
+  for (n2 = 0; n2 < len2; n2++) {
+    if (IsVowel(syl2.phonemes[n2])) {
+      break;
+    }
+  }
+  // Now all the remaining phonemes must match.
+  if (len1 - n1 == len2 - n2) {
+    bool equal = true;
+    for (; n1 < len1; n1++, n2++) {
+      if (syl1.phonemes[n1] != syl2.phonemes[n2]) {
+        equal = false;
+        break;
+      }
+    }
+    return equal;
+  } else {
+    return false;
+  }
+}
+
 bool IsRhyme(const Pronounces& prons1, const Pronounces& prons2) {
   for (const auto& pron1 : prons1) {
     for (const auto& pron2 : prons2) {
-      const Syllable& syl1 = pron1.back();
-      const Syllable& syl2 = pron2.back();
-      int n1, len1 = syl1.phonemes.size();
-      int n2, len2 = syl2.phonemes.size();
-      // Skip over the initial consonant phonemes.
-      for (n1 = 0; n1 < len1; n1++) {
-        if (IsVowel(syl1.phonemes[n1])) {
-          break;
-        }
-      }
-      for (n2 = 0; n2 < len2; n2++) {
-        if (IsVowel(syl2.phonemes[n2])) {
-          break;
-        }
-      }
-      // Now all the remaining phonemes must match.
-      if (len1 - n1 == len2 - n2) {
-        bool equal = true;
-        for (; n1 < len1; n1++, n2++) {
-          if (syl1.phonemes[n1] != syl2.phonemes[n2]) {
-            equal = false;
-            break;
-          }
-        }
-        if (equal) {
-          return true;
-        }
+      if (IsRhyme(pron1, pron2)) {
+        return true;
       }
     }
   }

@@ -2,7 +2,6 @@
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
 #include "poemy/cmudict.h"
-#include <memory>
 #include <glog/logging.h>
 #include "poemy/timeit.h"
 

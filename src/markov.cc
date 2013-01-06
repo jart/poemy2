@@ -39,7 +39,6 @@ void Markov::Load(Corpus* corp) {
       if (w3.empty()) {
         break;
       }
-      CHECK(w3[0] != '\0');
       chain_[{w1, w2}].emplace_back(w3);
       std::swap(w1, w2);
       std::swap(w2, w3);
@@ -52,9 +51,9 @@ void Markov::LoadDone() {
   keys_.clear();
   keys_.reserve(chain_.size());
   for (auto& ent : chain_) {
-    std::unique(std::begin(ent.second), std::end(ent.second));
-    ent.second.shrink_to_fit();
-    keys_.emplace_back(ent.first);
+    RemoveDuplicates(&ent.second);
+    std::random_shuffle(ent.second.begin(), ent.second.end());
+    keys_.emplace_back(ent.first.first, ent.first.second);
   }
 }
 
@@ -72,8 +71,15 @@ const vector<string>& Markov::Picks(const pair<string, string>& words) const {
     return empty;
   }
   // vector<string> choices = chain_[word1 + kDelimiter + word2];
-  // std::random_shuffle(std::begin(choices), std::end(choices));
+  // std::random_shuffle(choices.begin(), choices.end());
   // return choices;
+}
+
+void Markov::RemoveDuplicates(vector<std::string>* list) {
+  std::sort(list->begin(), list->end());
+  auto new_end = std::unique(list->begin(), list->end());
+  list->resize(new_end - list->begin());
+  list->shrink_to_fit();
 }
 
 }  // namespace poemy

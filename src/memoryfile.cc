@@ -18,7 +18,7 @@ MemoryFile::MemoryFile(const std::string& path) : path_(path) {
   PCHECK(fd_ = open(path_.c_str(), O_RDONLY)) << path_;
   PCHECK(fstat(fd_, &sb) == 0) << path_;
   size_ = sb.st_size;
-  addr_ = mmap(NULL, size_, PROT_READ, MAP_PRIVATE, fd_, 0);
+  addr_ = mmap(nullptr, size_, PROT_READ, MAP_PRIVATE, fd_, 0);
   PCHECK(addr_ != MAP_FAILED) << path_;
 }
 

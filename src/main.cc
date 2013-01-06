@@ -1,6 +1,7 @@
 // poemy - A poetry generator
 // Copyright (c) 2012 Justine Alexandra Roberts Tunney
 
+#include <csignal>
 #include <chrono>
 #include <fstream>
 #include <iostream>
@@ -25,7 +26,7 @@ DEFINE_int32(lines, 30, "How many lines of poetry to generate.");
 DEFINE_int32(tries, 5, "How many times to crawl node before quitting.");
 DEFINE_string(corpora, "goth", "Comma-separated list of corpora to load.");
 DEFINE_string(corpora_path, "./corpora", "Path of corpus folders.");
-DEFINE_string(dict, "cmu", "Which pronunciation dictionary to use? This can "
+DEFINE_string(dict, "isle", "Which pronunciation dictionary to use? This can "
                   "either be 'isle' or 'cmu'");
 DEFINE_string(isledict_path, "./data/isledict/isledict0.2.txt",
               "Path of isledict.txt database file.");
@@ -65,34 +66,30 @@ static poemy::Dict* g_dict;
 static int g_count_MakeWord = 0;
 static int g_count_MakeLine = 0;
 
-void MakeWord(const string& word1,
+bool MakeWord(const string& word1,
               const string& word2,
               size_t pos,
               const Meter& meter,
-              const string& rhyme,
-              vector<Word>* words,
+              const Word* rhyme,
               VisitedSet* visited,
-              Error* err) {
+              vector<Word>* words) {
   ++g_count_MakeWord;
   if (pos == meter.size()) {
     if (g_bad_end_words.find(word2) != g_bad_end_words.end()) {
-      err->set_code(Error::kExhausted);
-      return;
+      return false;
     }
-    if (!rhyme.empty()) {
-      const string& last_word = words->back().word;
-      if (last_word == rhyme) {
-        err->set_code(Error::kExhausted);
-        return;
+    if (rhyme != nullptr) {
+      const Word* last_word = &words->back();
+      if (rhyme->word == last_word->word) {
+        return false;
       }
-      if (!poemy::IsRhyme((*g_dict)[last_word], (*g_dict)[rhyme])) {
-        err->set_code(Error::kExhausted);
-        return;
+      if (!poemy::IsRhyme(*rhyme->pronounce, *last_word->pronounce)) {
+        return false;
       }
     }
-    return;
+    return true;
   }
-  for (const auto& word3 : g_chain.Picks({word1, word2})) {
+  for (const string& word3 : g_chain.Picks({word1, word2})) {
     if (visited->find({word2, word3}) != visited->end()) {
       continue;
     }
@@ -107,32 +104,31 @@ void MakeWord(const string& word1,
     }
     words->emplace_back(word3, pronounce);
     pos += pronounce->size();
-    MakeWord(word2, word3, pos, meter, rhyme, words, visited, err);
-    if (err->Ok()) {
-      return;
+    if (MakeWord(word2, word3, pos, meter, rhyme, visited, words)) {
+      return true;
     }
-    err->Reset();
     pos -= words->back().pronounce->size();
     words->pop_back();
   }
-  err->set_code(Error::kExhausted);
+  return false;
 }
 
-vector<string> MakeLine(const Meter& meter, const string& rhyme, Error* err) {
+bool MakeLine(const Meter& meter, const Word* rhyme, vector<Word>* words) {
   ++g_count_MakeLine;
+  VisitedSet visited;
+  visited.set_empty_key({"", ""});
   for (int tries = 0; tries < FLAGS_tries; ++tries) {
+    words->clear();
+    visited.clear();
     size_t pos = 0;
-    vector<Word> words;
     const Pronounce* pronounce1;
     const Pronounce* pronounce2;
-    VisitedSet visited;
-    const pair<string, string>& first_words = g_chain.PickFirst();
-    const string& word1 = first_words.first;
-    const string& word2 = first_words.second;
+    const pair<string, string> first_words = g_chain.PickFirst();
+    const string word1 = first_words.first;
+    const string word2 = first_words.second;
     if (g_bad_start_words.find(word1) != g_bad_start_words.end()) {
       continue;
     }
-    visited.set_empty_key({"", ""});
     visited.insert({word1, word2});
     pronounce1 = poemy::MatchMeter((*g_dict)[word1], meter, pos);
     if (!pronounce1) {
@@ -144,20 +140,13 @@ vector<string> MakeLine(const Meter& meter, const string& rhyme, Error* err) {
       continue;
     }
     pos += pronounce2->size();
-    words.emplace_back(word1, pronounce1);
-    words.emplace_back(word2, pronounce2);
-    MakeWord(word1, word2, pos, meter, rhyme, &words, &visited, err);
-    if (err->Ok()) {
-      vector<string> res;
-      for (auto& wp : words) {
-        res.push_back(std::move(wp.word));
-      }
-      return res;
+    words->emplace_back(word1, pronounce1);
+    words->emplace_back(word2, pronounce2);
+    if (MakeWord(word1, word2, pos, meter, rhyme, &visited, words)) {
+      return true;
     }
-    err->Reset();
   }
-  err->set_code(Error::kExhausted);
-  return {};
+  return false;
 }
 
 void LoadWords(Set* out, const string& path) {
@@ -172,12 +161,19 @@ void LoadWords(Set* out, const string& path) {
   }
 }
 
+static bool g_running = true;
+void on_sigint(int sig) {
+  LOG(INFO) << "got sigint";
+  g_running = false;
+}
+
 int main(int argc, char** argv) {
   google::SetUsageMessage(PACKAGE_NAME " [FLAGS]");
   google::SetVersionString(VERSION);
   google::ParseCommandLineFlags(&argc, &argv, true);
   google::InitGoogleLogging(argv[0]);
   google::InstallFailureSignalHandler();
+  signal(SIGINT, on_sigint);
 
   LoadWords(&g_bad_end_words, FLAGS_bad_end_words);
   LoadWords(&g_bad_start_words, FLAGS_bad_start_words);
@@ -207,36 +203,31 @@ int main(int argc, char** argv) {
   using std::chrono::high_resolution_clock;
   auto begin = high_resolution_clock::now();
 
-  // poemy::util::CpuProfilerStart();
+  poemy::util::CpuProfilerStart();
   const Meter meter = {0, 1, 0, 1, 0, 1, 0, 1, 0, 1};
-  int n = 0;
-  while (n < FLAGS_lines) {
-    Error err;
-    vector<string> line1 = MakeLine(meter, "", &err);
-    if (!err.Ok()) {
+  int lines = 0;
+  while (g_running && lines < FLAGS_lines) {
+    vector<Word> line1;
+    vector<Word> line2;
+    if (!MakeLine(meter, nullptr, &line1) ||
+        !MakeLine(meter, &line1.back(), &line2)) {
       continue;
     }
-    err.Reset();
-    const string& rhyme = line1[line1.size() - 1];
-    vector<string> line2 = MakeLine(meter, rhyme, &err);
-    if (!err.Ok()) {
-      continue;
-    }
-    for (const auto& str : line1) {
-      cout << str << " ";
+    for (const Word& word : line1) {
+      cout << word.word << " ";
     }
     cout << endl;
-    for (const auto& str : line2) {
-      cout << str << " ";
+    for (const Word& word : line2) {
+      cout << word.word << " ";
     }
     cout << endl;
-    n += 2;
+    lines += 2;
   }
-  // poemy::util::CpuProfilerStop();
+  poemy::util::CpuProfilerStop();
 
   auto end = high_resolution_clock::now();
   auto elapsed = duration_cast<std::chrono::milliseconds>(end - begin);
-  auto lps = FLAGS_lines / (elapsed.count() / 1000.0);
+  auto lps = lines / (elapsed.count() / 1000.0);
   LOG(INFO) << "g_count_MakeLine: " << g_count_MakeLine;
   LOG(INFO) << "g_count_MakeWord: " << g_count_MakeWord;
   LOG(INFO) << "lines per second " << lps;

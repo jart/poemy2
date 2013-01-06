@@ -83,6 +83,7 @@ test_SOURCES = \
 	src/error_test.cc \
 	src/hash_test.cc \
 	src/isledict_test.cc \
+	src/markov_test.cc \
 	src/pronounce_test.cc \
 	src/test.cc
 test_CPPFLAGS = $(poemy_CPPFLAGS) -Igtest-1.6.0 -Igtest-1.6.0/include -pthread

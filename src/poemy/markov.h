@@ -29,14 +29,18 @@ class Markov {
       const std::pair<std::string, std::string>& words) const;
 
  private:
-  typedef MurmurHash3<std::pair<std::string, std::string> > Hasher;
-  typedef google::dense_hash_map<std::pair<std::string, std::string>,
-                                 std::vector<std::string>, Hasher> Map;
-  Map chain_;
-  std::vector<std::pair<std::string, std::string> > keys_;
+  typedef std::pair<std::string, std::string> Key;
+  typedef std::vector<std::string> Value;
+  typedef MurmurHash3<Key> Hasher;
+
+  google::dense_hash_map<Key, Value, Hasher> chain_;
+  std::vector<Key> keys_;
   mutable std::mt19937 random_;
   static const char kDelimiter = ',';
 
+  static void RemoveDuplicates(std::vector<std::string>* list);
+
+  POEMY_FRIEND_TEST(MarkovTest, RemoveDuplicates);
   POEMY_DISALLOW_COPY_AND_ASSIGN(Markov);
 };
 

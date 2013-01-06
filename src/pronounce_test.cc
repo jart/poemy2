@@ -33,7 +33,7 @@ Pronounces philosophy = {
   { {{kF, kAH}, 0}, {{kL, kAA}, 1}, {{kS, kAH}, 0}, {{kF, kIY}, 0} },
 };
 
-TEST(PronounceTest, IsRhyme) {
+TEST(PronounceTest, IsRhyme_Pronounces) {
   ASSERT_TRUE(IsRhyme(passion, fashion));
   ASSERT_TRUE(IsRhyme(fashion, passion));
   ASSERT_TRUE(IsRhyme(painted, acquainted));
@@ -49,6 +49,14 @@ TEST(PronounceTest, IsRhyme) {
   ASSERT_FALSE(IsRhyme(fashion, empty));
   ASSERT_FALSE(IsRhyme(painted, empty));
   ASSERT_FALSE(IsRhyme(fashion, empty));
+}
+
+TEST(PronounceTest, IsRhyme_Pronounce) {
+  ASSERT_TRUE(IsRhyme(passion[0], fashion[0]));
+  ASSERT_TRUE(IsRhyme(fashion[0], passion[0]));
+  ASSERT_TRUE(IsRhyme(painted[1], acquainted[1]));
+  ASSERT_TRUE(IsRhyme(painted[1], acquainted[0]));
+  ASSERT_FALSE(IsRhyme(painted[0], acquainted[0]));
 }
 
 TEST(PronounceTest, MatchMeter) {
