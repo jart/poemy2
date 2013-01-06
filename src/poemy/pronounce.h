@@ -4,13 +4,14 @@
 #ifndef POEMY_PRONOUNCE_H_
 #define POEMY_PRONOUNCE_H_
 
+#include <cstdint>
 #include <ostream>
 #include <string>
 #include <vector>
 
 namespace poemy {
 
-enum Phoneme {
+enum Phoneme : uint8_t {
   kAA = 0,
   kAE = 1,
   kAH = 2,

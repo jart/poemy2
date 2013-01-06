@@ -222,8 +222,14 @@ int main(int argc, char** argv) {
     if (!err.Ok()) {
       continue;
     }
-    for (const auto& str : line1) cout << str << " "; cout << endl;
-    for (const auto& str : line2) cout << str << " "; cout << endl;
+    for (const auto& str : line1) {
+      cout << str << " ";
+    }
+    cout << endl;
+    for (const auto& str : line2) {
+      cout << str << " ";
+    }
+    cout << endl;
     n += 2;
   }
   // poemy::util::CpuProfilerStop();

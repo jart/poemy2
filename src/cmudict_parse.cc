@@ -502,15 +502,15 @@ case 16:
 	}
 	goto st0;
 tr50:
-#line 97 "src/cmudict_parse.rl"
+#line 98 "src/cmudict_parse.rl"
 	{ syllable->stress = 0; }
 	goto st17;
 tr51:
-#line 98 "src/cmudict_parse.rl"
+#line 99 "src/cmudict_parse.rl"
 	{ syllable->stress = 1; }
 	goto st17;
 tr52:
-#line 99 "src/cmudict_parse.rl"
+#line 100 "src/cmudict_parse.rl"
 	{ syllable->stress = 2; }
 	goto st17;
 st17:
@@ -732,7 +732,7 @@ case 15:
 	_out: {}
 	}
 
-#line 109 "src/cmudict_parse.rl"
+#line 111 "src/cmudict_parse.rl"
 
 
   return (cs != cmudict_error);
