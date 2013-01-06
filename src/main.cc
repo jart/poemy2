@@ -47,14 +47,14 @@ using std::pair;
 using std::string;
 using std::vector;
 
-typedef google::dense_hash_set<string, poemy::MurmurHash3<string> > Set;
+typedef google::dense_hash_set<int> Set;
 typedef google::dense_hash_set<
-  pair<string, string>, poemy::MurmurHash3<pair<string, string> > > VisitedSet;
+  pair<int, int>, poemy::MurmurHash3<pair<int, int> > > VisitedSet;
 
 struct Word {
-  Word(const string& word, const Pronounce* pronounce)
+  Word(int word, const Pronounce* pronounce)
       : word(word), pronounce(pronounce) {}
-  string word;
+  int word;
   const Pronounce* pronounce;
 };
 
@@ -65,8 +65,8 @@ static poemy::Dict* g_dict;
 static int g_count_MakeWord = 0;
 static int g_count_MakeLine = 0;
 
-bool MakeWord(const string& word1,
-              const string& word2,
+bool MakeWord(int word1,
+              int word2,
               size_t pos,
               const Meter& meter,
               const Word* rhyme,
@@ -88,7 +88,7 @@ bool MakeWord(const string& word1,
     }
     return true;
   }
-  for (const string& word3 : g_chain.Picks({word1, word2})) {
+  for (int word3 : g_chain.Picks({word1, word2})) {
     if (visited->find({word2, word3}) != visited->end()) {
       continue;
     }
@@ -115,16 +115,16 @@ bool MakeWord(const string& word1,
 bool MakeLine(const Meter& meter, const Word* rhyme, vector<Word>* words) {
   ++g_count_MakeLine;
   VisitedSet visited;
-  visited.set_empty_key({"", ""});
+  visited.set_empty_key({-1, -1});
   for (int tries = 0; tries < FLAGS_tries; ++tries) {
     words->clear();
     visited.clear();
     size_t pos = 0;
     const Pronounce* pronounce1;
     const Pronounce* pronounce2;
-    const pair<string, string> first_words = g_chain.PickFirst();
-    const string word1 = first_words.first;
-    const string word2 = first_words.second;
+    pair<int, int> first_words = g_chain.PickFirst();
+    int word1 = first_words.first;
+    int word2 = first_words.second;
     if (g_bad_start_words.find(word1) != g_bad_start_words.end()) {
       continue;
     }
@@ -151,11 +151,14 @@ bool MakeLine(const Meter& meter, const Word* rhyme, vector<Word>* words) {
 void LoadWords(Set* out, const string& path) {
   std::ifstream input(path);
   PCHECK(input.good()) << path;
-  out->set_empty_key("");
+  out->set_empty_key(-1);
   string word;
   while (std::getline(input, word, '\n')) {
     if (!word.empty()) {
-      out->insert(word);
+      int code = g_dict->Code(word);
+      if (code != -1) {
+        out->insert(code);
+      }
     }
   }
 }
@@ -166,10 +169,6 @@ int main(int argc, char** argv) {
   google::ParseCommandLineFlags(&argc, &argv, true);
   google::InitGoogleLogging(argv[0]);
   google::InstallFailureSignalHandler();
-  signal(SIGINT, on_sigint);
-
-  LoadWords(&g_bad_end_words, FLAGS_bad_end_words);
-  LoadWords(&g_bad_start_words, FLAGS_bad_start_words);
 
   if (FLAGS_dict == "isle") {
     g_dict = new poemy::Isledict();
@@ -182,12 +181,15 @@ int main(int argc, char** argv) {
   }
   std::unique_ptr<poemy::Dict> free_dict(g_dict);
 
+  LoadWords(&g_bad_end_words, FLAGS_bad_end_words);
+  LoadWords(&g_bad_start_words, FLAGS_bad_start_words);
+
   for (const auto& corpus : poemy::util::Split(FLAGS_corpora, ',')) {
     string corpus_path(FLAGS_corpora_path + "/" + corpus);
     for (const auto& entry : poemy::util::ListDir(corpus_path)) {
       string path(FLAGS_corpora_path + "/" + corpus + "/" + entry);
       LOG(INFO) << "loading: " << path;
-      g_chain.Load(new poemy::Corpus(new std::ifstream(path)));
+      g_chain.Load(g_dict, new poemy::Corpus(new std::ifstream(path)));
     }
   }
   g_chain.LoadDone();
@@ -207,11 +209,11 @@ int main(int argc, char** argv) {
       continue;
     }
     for (const Word& word : line1) {
-      cout << word.word << " ";
+      cout << g_dict->Word(word.word) << " ";
     }
     cout << endl;
     for (const Word& word : line2) {
-      cout << word.word << " ";
+      cout << g_dict->Word(word.word) << " ";
     }
     cout << endl;
     lines += 2;

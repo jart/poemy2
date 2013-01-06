@@ -17,20 +17,20 @@
 namespace poemy {
 
 class Corpus;
+class Dict;
 
 class Markov {
  public:
   explicit Markov();
   // I take ownership of 'corp'.
-  void Load(Corpus* corp);
+  void Load(const Dict* dict, Corpus* corp);
   void LoadDone();
-  const std::pair<std::string, std::string>& PickFirst() const;
-  const std::vector<std::string>& Picks(
-      const std::pair<std::string, std::string>& words) const;
+  std::pair<int, int> PickFirst() const;
+  const std::vector<int>& Picks(std::pair<int, int> words) const;
 
  private:
-  typedef std::pair<std::string, std::string> Key;
-  typedef std::vector<std::string> Value;
+  typedef std::pair<int, int> Key;
+  typedef std::vector<int> Value;
   typedef MurmurHash3<Key> Hasher;
 
   google::dense_hash_map<Key, Value, Hasher> chain_;
@@ -38,7 +38,7 @@ class Markov {
   mutable std::mt19937 random_;
   static const char kDelimiter = ',';
 
-  static void RemoveDuplicates(std::vector<std::string>* list);
+  static void RemoveDuplicates(std::vector<int>* list);
 
   POEMY_FRIEND_TEST(MarkovTest, RemoveDuplicates);
   POEMY_DISALLOW_COPY_AND_ASSIGN(Markov);

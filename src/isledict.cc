@@ -8,7 +8,8 @@
 namespace poemy {
 
 Isledict::Isledict() {
-  pronounce_.set_empty_key("");
+  pronounce_.set_empty_key(-1);
+  codes_.set_empty_key("");
 }
 
 void Isledict::Load(std::istream* input) {
@@ -21,7 +22,13 @@ void Isledict::Load(std::istream* input) {
     if (!Parse(line, &word, &pron)) {
       continue;
     }
-    pronounce_[word].push_back(std::move(pron));
+    int code = Code(word);
+    if (code == -1) {
+      words_.emplace_back(word);
+      code = words_.size() - 1;
+      codes_[word] = code;
+    }
+    pronounce_[code].push_back(std::move(pron));
   }
 }
 

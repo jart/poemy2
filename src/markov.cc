@@ -8,6 +8,7 @@
 
 #include <glog/logging.h>
 #include "poemy/corpus.h"
+#include <poemy/dict.h>
 
 using std::pair;
 using std::string;
@@ -17,31 +18,31 @@ namespace poemy {
 
 Markov::Markov()
     : random_(std::chrono::system_clock::now().time_since_epoch().count()) {
-  chain_.set_empty_key({"", ""});
+  chain_.set_empty_key({-1, -1});
 }
 
-void Markov::Load(Corpus* corp) {
+void Markov::Load(const Dict* dict, Corpus* corp) {
   std::unique_ptr<Corpus> free_corp(corp);
   while (corp->good()) {
-    string w1 = corp->get();
-    if (w1.empty()) {
+    int w1 = dict->Code(corp->get());
+    if (w1 == -1) {
       continue;
     }
     if (!corp->good()) {
       break;
     }
-    string w2 = corp->get();
-    if (w2.empty()) {
+    int w2 = dict->Code(corp->get());
+    if (w2 == -1) {
       continue;
     }
     while (corp->good()) {
-      string w3 = corp->get();
-      if (w3.empty()) {
+      int w3 = dict->Code(corp->get());
+      if (w3 == -1) {
         break;
       }
       chain_[{w1, w2}].emplace_back(w3);
-      std::swap(w1, w2);
-      std::swap(w2, w3);
+      w1 = w2;
+      w2 = w3;
     }
   }
 }
@@ -57,25 +58,22 @@ void Markov::LoadDone() {
   }
 }
 
-const pair<string, string>& Markov::PickFirst() const {
+pair<int, int> Markov::PickFirst() const {
   std::uniform_int_distribution<size_t> distrib(0, keys_.size() - 1);
   return keys_[distrib(random_)];
 }
 
-const vector<string>& Markov::Picks(const pair<string, string>& words) const {
-  static vector<string> empty;
+const vector<int>& Markov::Picks(pair<int, int> words) const {
+  static vector<int> empty;
   auto ent = chain_.find(words);
   if (ent != chain_.end()) {
     return ent->second;
   } else {
     return empty;
   }
-  // vector<string> choices = chain_[word1 + kDelimiter + word2];
-  // std::random_shuffle(choices.begin(), choices.end());
-  // return choices;
 }
 
-void Markov::RemoveDuplicates(vector<std::string>* list) {
+void Markov::RemoveDuplicates(vector<int>* list) {
   std::sort(list->begin(), list->end());
   auto new_end = std::unique(list->begin(), list->end());
   list->resize(new_end - list->begin());

@@ -4,6 +4,9 @@
 #ifndef POEMY_CMUDICT_H_
 #define POEMY_CMUDICT_H_
 
+#include <vector>
+
+#include <glog/logging.h>
 #include <sparsehash/dense_hash_map>
 
 #include <poemy/dict.h>
@@ -16,14 +19,30 @@ class Cmudict : public Dict {
   Cmudict();
   // I take ownership of 'input'.
   virtual void Load(std::istream* input);
-  virtual const Pronounces& operator[](const std::string& word) {
-    return pronounce_[word];
+
+  virtual const Pronounces& operator[](int code) const {
+    const auto& ent = pronounce_.find(code);
+    CHECK(ent != pronounce_.end()) << "bad code: " << code;
+    return ent->second;
+  }
+
+  virtual const std::string& Word(int code) const {
+    return words_[code];
+  }
+
+  virtual int Code(const std::string& word) const {
+    const auto& ent = codes_.find(word);
+    if (ent != codes_.end()) {
+      return ent->second;
+    } else {
+      return -1;
+    }
   }
 
  private:
-  typedef MurmurHash3<std::string> Hasher;
-  typedef google::dense_hash_map<const std::string, Pronounces, Hasher> Map;
-  Map pronounce_;
+  google::dense_hash_map<int, Pronounces> pronounce_;
+  std::vector<std::string> words_;
+  google::dense_hash_map<std::string, int, MurmurHash3<std::string> > codes_;
   bool Parse(const std::string& line, std::string* word, Pronounce *res) const;
 
   POEMY_FRIEND_TEST(CmudictTest, Parse);

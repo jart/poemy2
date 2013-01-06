@@ -15,7 +15,9 @@ namespace poemy {
 class Dict {
  public:
   virtual void Load(std::istream* input) = 0;
-  virtual const Pronounces& operator[](const std::string& word) = 0;
+  virtual const Pronounces& operator[](int code) const = 0;
+  virtual const std::string& Word(int code) const = 0;
+  virtual int Code(const std::string& word) const = 0;
 };
 
 }  // namespace poemy
