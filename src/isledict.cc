@@ -8,7 +8,6 @@
 namespace poemy {
 
 Isledict::Isledict() {
-  pronounce_.set_empty_key(-1);
   codes_.set_empty_key("");
 }
 
@@ -27,6 +26,7 @@ void Isledict::Load(std::istream* input) {
       words_.emplace_back(word);
       code = words_.size() - 1;
       codes_[word] = code;
+      pronounce_.emplace_back();
     }
     pronounce_[code].push_back(std::move(pron));
   }

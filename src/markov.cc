@@ -8,11 +8,7 @@
 
 #include <glog/logging.h>
 #include "poemy/corpus.h"
-#include <poemy/dict.h>
-
-using std::pair;
-using std::string;
-using std::vector;
+#include "poemy/dict.h"
 
 namespace poemy {
 
@@ -58,13 +54,13 @@ void Markov::LoadDone() {
   }
 }
 
-pair<int, int> Markov::PickFirst() const {
+Markov::Key Markov::PickFirst() const {
   std::uniform_int_distribution<size_t> distrib(0, keys_.size() - 1);
   return keys_[distrib(random_)];
 }
 
-const vector<int>& Markov::Picks(pair<int, int> words) const {
-  static vector<int> empty;
+const Markov::Value& Markov::Picks(Markov::Key words) const {
+  static Markov::Value empty;
   auto ent = chain_.find(words);
   if (ent != chain_.end()) {
     return ent->second;
@@ -73,7 +69,7 @@ const vector<int>& Markov::Picks(pair<int, int> words) const {
   }
 }
 
-void Markov::RemoveDuplicates(vector<int>* list) {
+void Markov::RemoveDuplicates(Markov::Value* list) {
   std::sort(list->begin(), list->end());
   auto new_end = std::unique(list->begin(), list->end());
   list->resize(new_end - list->begin());

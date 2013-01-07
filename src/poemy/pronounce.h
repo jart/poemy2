@@ -55,7 +55,7 @@ enum Phoneme : uint8_t {
 
 struct Syllable {
   std::vector<Phoneme> phonemes;
-  int stress;
+  uint8_t stress;
   bool operator==(const Syllable& other) const {
     return (stress == other.stress && phonemes == other.phonemes);
   }

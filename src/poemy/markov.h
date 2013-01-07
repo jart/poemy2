@@ -21,26 +21,25 @@ class Dict;
 
 class Markov {
  public:
-  explicit Markov();
-  // I take ownership of 'corp'.
-  void Load(const Dict* dict, Corpus* corp);
-  void LoadDone();
-  std::pair<int, int> PickFirst() const;
-  const std::vector<int>& Picks(std::pair<int, int> words) const;
-
- private:
   typedef std::pair<int, int> Key;
   typedef std::vector<int> Value;
   typedef MurmurHash3<Key> Hasher;
 
+  explicit Markov();
+  // I take ownership of 'corp'.
+  void Load(const Dict* dict, Corpus* corp);
+  void LoadDone();
+  Key PickFirst() const;
+  const Value& Picks(Key words) const;
+
+ private:
   google::dense_hash_map<Key, Value, Hasher> chain_;
   std::vector<Key> keys_;
   mutable std::mt19937 random_;
   static const char kDelimiter = ',';
 
-  static void RemoveDuplicates(std::vector<int>* list);
+  static void RemoveDuplicates(Value* list);
 
-  POEMY_FRIEND_TEST(MarkovTest, RemoveDuplicates);
   POEMY_DISALLOW_COPY_AND_ASSIGN(Markov);
 };
 

@@ -26,7 +26,7 @@ DEFINE_int32(tries, 5, "How many times to crawl node before quitting.");
 DEFINE_string(corpora, "goth", "Comma-separated list of corpora to load.");
 DEFINE_string(corpora_path, "./corpora", "Path of corpus folders.");
 DEFINE_string(dict, "isle", "Which pronunciation dictionary to use? This can "
-                  "either be 'isle' or 'cmu'");
+              "either be 'isle' or 'cmu'");
 DEFINE_string(isledict_path, "./data/isledict/isledict0.2.txt",
               "Path of isledict.txt database file.");
 DEFINE_string(cmudict_path, "./data/cmudict.txt",
@@ -49,7 +49,7 @@ using std::vector;
 
 typedef google::dense_hash_set<int> Set;
 typedef google::dense_hash_set<
-  pair<int, int>, poemy::MurmurHash3<pair<int, int> > > VisitedSet;
+    pair<int, int>, poemy::MurmurHash3<pair<int, int> > > VisitedSet;
 
 struct Word {
   Word(int word, const Pronounce* pronounce)
@@ -93,7 +93,7 @@ bool MakeWord(int word1,
       continue;
     }
     visited->insert({word2, word3});
-    const Pronounces& prons = (*g_dict)[word3];
+    const Pronounces& prons = g_dict->Speak(word3);
     if (prons.empty()) {
       continue;
     }
@@ -129,12 +129,12 @@ bool MakeLine(const Meter& meter, const Word* rhyme, vector<Word>* words) {
       continue;
     }
     visited.insert({word1, word2});
-    pronounce1 = poemy::MatchMeter((*g_dict)[word1], meter, pos);
+    pronounce1 = poemy::MatchMeter(g_dict->Speak(word1), meter, pos);
     if (!pronounce1) {
       continue;
     }
     pos += pronounce1->size();
-    pronounce2 = poemy::MatchMeter((*g_dict)[word2], meter, pos);
+    pronounce2 = poemy::MatchMeter(g_dict->Speak(word2), meter, pos);
     if (!pronounce2) {
       continue;
     }
@@ -198,7 +198,7 @@ int main(int argc, char** argv) {
   using std::chrono::high_resolution_clock;
   auto begin = high_resolution_clock::now();
 
-  poemy::util::CpuProfilerStart();
+  // poemy::util::CpuProfilerStart();
   const Meter meter = {0, 1, 0, 1, 0, 1, 0, 1, 0, 1};
   int lines = 0;
   while (lines < FLAGS_lines) {
@@ -218,7 +218,7 @@ int main(int argc, char** argv) {
     cout << endl;
     lines += 2;
   }
-  poemy::util::CpuProfilerStop();
+  // poemy::util::CpuProfilerStop();
 
   auto end = high_resolution_clock::now();
   auto elapsed = duration_cast<std::chrono::milliseconds>(end - begin);
