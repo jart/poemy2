@@ -14,6 +14,8 @@ namespace poemy {
 
 class Dict {
  public:
+  static const int kMissing = -1;
+  // I take ownership of 'input'.
   virtual void Load(std::istream* input) = 0;
   virtual const Pronounces& Speak(int code) const = 0;
   virtual const std::string& Word(int code) const = 0;

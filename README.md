@@ -9,7 +9,7 @@ pronunciation dictionary.
 
 First you need to install some dependencies:
 
-- `sudo apt-get install build-essential pkg-config autoconf automake ragel`
+- `sudo apt-get install clang pkg-config autoconf automake ragel`
 - Google gflags: <http://code.google.com/p/gflags/>
 - Google glog: <http://code.google.com/p/google-glog/>
 - Google SparseHash: <http://code.google.com/p/sparsehash/>
@@ -19,8 +19,9 @@ First you need to install some dependencies:
 Then build / install poemy as follows:
 
     ./autogen.sh
-    ./configure CPPFLAGS="-Wall -Werror -pipe -march=native"
-    make check -j4
+    CXX=clang++ ./configure
+    make
+    make check
 
 Here's some example invocations of poemy:
 

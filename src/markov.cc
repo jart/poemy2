@@ -60,7 +60,7 @@ Markov::Key Markov::PickFirst() const {
 }
 
 const Markov::Value& Markov::Picks(Markov::Key words) const {
-  static Markov::Value empty;
+  static const Markov::Value empty;
   auto ent = chain_.find(words);
   if (ent != chain_.end()) {
     return ent->second;

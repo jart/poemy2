@@ -13,7 +13,6 @@
 
 #include "poemy/cmudict.h"
 #include "poemy/corpus.h"
-#include "poemy/error.h"
 #include "poemy/hash.h"
 #include "poemy/isledict.h"
 #include "poemy/markov.h"
@@ -36,7 +35,7 @@ DEFINE_string(bad_end_words, "./data/bad_end_words.txt",
 DEFINE_string(bad_start_words, "./data/bad_start_words.txt",
               "Path of new-line delimited bad start words file.");
 
-using poemy::Error;
+using poemy::Dict;
 using poemy::Meter;
 using poemy::Pronounce;
 using poemy::Pronounces;
@@ -47,9 +46,9 @@ using std::pair;
 using std::string;
 using std::vector;
 
-typedef google::dense_hash_set<int> Set;
+typedef google::dense_hash_set<int, poemy::MurmurHash3<int> > Set;
 typedef google::dense_hash_set<
-    pair<int, int>, poemy::MurmurHash3<pair<int, int> > > VisitedSet;
+  pair<int, int>, poemy::MurmurHash3<pair<int, int> > > VisitedSet;
 
 struct Word {
   Word(int word, const Pronounce* pronounce)
@@ -61,7 +60,7 @@ struct Word {
 static Set g_bad_end_words;
 static Set g_bad_start_words;
 static poemy::Markov g_chain;
-static poemy::Dict* g_dict;
+static std::unique_ptr<Dict> g_dict;
 static int g_count_MakeWord = 0;
 static int g_count_MakeLine = 0;
 
@@ -156,7 +155,7 @@ void LoadWords(Set* out, const string& path) {
   while (std::getline(input, word, '\n')) {
     if (!word.empty()) {
       int code = g_dict->Code(word);
-      if (code != -1) {
+      if (code != Dict::kMissing) {
         out->insert(code);
       }
     }
@@ -171,15 +170,14 @@ int main(int argc, char** argv) {
   google::InstallFailureSignalHandler();
 
   if (FLAGS_dict == "isle") {
-    g_dict = new poemy::Isledict();
+    g_dict.reset(new poemy::Isledict());
     g_dict->Load(new std::ifstream(FLAGS_isledict_path));
   } else if (FLAGS_dict == "cmu") {
-    g_dict = new poemy::Cmudict();
+    g_dict.reset(new poemy::Cmudict());
     g_dict->Load(new std::ifstream(FLAGS_cmudict_path));
   } else {
     LOG(FATAL) << "Invalid word dict: " << FLAGS_dict;
   }
-  std::unique_ptr<poemy::Dict> free_dict(g_dict);
 
   LoadWords(&g_bad_end_words, FLAGS_bad_end_words);
   LoadWords(&g_bad_start_words, FLAGS_bad_start_words);
@@ -189,7 +187,7 @@ int main(int argc, char** argv) {
     for (const auto& entry : poemy::util::ListDir(corpus_path)) {
       string path(FLAGS_corpora_path + "/" + corpus + "/" + entry);
       LOG(INFO) << "loading: " << path;
-      g_chain.Load(g_dict, new poemy::Corpus(new std::ifstream(path)));
+      g_chain.Load(g_dict.get(), new poemy::Corpus(new std::ifstream(path)));
     }
   }
   g_chain.LoadDone();

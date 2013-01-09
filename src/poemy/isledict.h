@@ -4,13 +4,11 @@
 #ifndef POEMY_ISLEDICT_H_
 #define POEMY_ISLEDICT_H_
 
-#include <vector>
-
-#include <sparsehash/dense_hash_map>
-
 #include <poemy/dict.h>
+#include <vector>
+#include <glog/logging.h>
+#include <sparsehash/dense_hash_map>
 #include <poemy/hash.h>
-#include <poemy/pronounce.h>
 
 namespace poemy {
 
@@ -20,20 +18,27 @@ class Isledict : public Dict {
   // I take ownership of 'input'.
   virtual void Load(std::istream* input);
 
-  virtual const Pronounces& Speak(int code) const {
-    return pronounce_[code];
+  virtual const Pronounces& Speak(int code) const override {
+    static const Pronounces empty;
+    if (code == kMissing) {
+      return empty;
+    } else {
+      CHECK(0 <= code && code < pronounce_.size());
+      return pronounce_[code];
+    }
   }
 
-  virtual const std::string& Word(int code) const {
+  virtual const std::string& Word(int code) const override {
+    CHECK(0 <= code && code < words_.size());
     return words_[code];
   }
 
-  virtual int Code(const std::string& word) const {
+  virtual int Code(const std::string& word) const override {
     const auto& ent = codes_.find(word);
     if (ent != codes_.end()) {
       return ent->second;
     } else {
-      return -1;
+      return kMissing;
     }
   }
 
