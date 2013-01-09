@@ -210,5 +210,9 @@ understanding of how this data structure works, see `src/cmudict_test.cc`.
 Using the data from these dictionaries, we are able to determine if words
 rhyme and match the desired rhythm.
 
+The Dict class also serves the important purpose of assigning an int ID to
+each word in the english language. This makes the poetry generating algorithms
+significantly faster.
+
 This code is written in conformance to the Google style guide with the
 exception of using STL streams and some unapproved C++11 features.
