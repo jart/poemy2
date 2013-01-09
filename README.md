@@ -30,14 +30,19 @@ Here's some example invocations of poemy:
     ./poemy --alsologtostderr --minloglevel=0
     ./poemy --alsologtostderr --tries=500 --lines=40 --corpora=goth --dict=isle
 
+By default, poemy uses iambic pentameter. Here's how you can customize the
+meter to be the same as Edgar Allen Poe's The Raven:
+
+    ./poemy --foot=trochaic --length=octameter
+
 ## Example Poems
 
-Even though poemy is still in the experimental proof of concept stage, it
-still writes poetry better than most humans. Take for instance this poem which
-was generated from the goth corpus (included with poemy) in iambic pentameter
-using a masculine couplet rhyming scheme. What you see below was generated
-*verbatim*; the only thing I changed was I added punctuation and removed two
-lines that ripped off Edgar Allan Poe too heavily.
+Even though poemy is in the experimental proof of concept stage, it still
+writes poetry better than most humans. Take for instance this poem which was
+generated from the goth corpus (included with poemy) in iambic pentameter
+using a couplet rhyming scheme. What you see below was generated *verbatim*;
+the only thing I changed was I added punctuation and removed two lines that
+ripped off Edgar Allan Poe too heavily.
 
 > We're lost in this cruel place your voice above  
 > Young soul from out my heart be still in love  

@@ -94,6 +94,76 @@ const Pronounce* MatchMeter(const Pronounces& prons, const Meter& meter,
   return nullptr;
 }
 
+const Meter ParseFoot(std::string foot) {
+  Meter res;
+  CHECK(!foot.empty());
+  if ('0' <= foot[0] && foot[0] <= '9') {
+    for (int stress : foot) {
+      switch (stress) {
+        case '0':
+          res.push_back(0);
+          break;
+        case '1':
+          res.push_back(1);
+          break;
+        case '2':
+          res.push_back(2);
+          break;
+        default:
+          LOG(FATAL) << "Bad foot: " << foot;
+      }
+    }
+  } else if (foot == "iambic") {
+    res = {0, 1};
+  } else if (foot == "trochaic") {
+    res = {1, 0};
+  } else if (foot == "anapestic") {
+    res = {0, 0, 1};
+  } else if (foot == "dactylic") {
+    res = {1, 0, 0};
+  } else if (foot == "amphibrachic") {
+    res = {0, 1, 0};
+  } else {
+    LOG(FATAL) << "Bad foot: " << foot;
+  }
+  return res;
+}
+
+int ParseMeterLength(std::string length) {
+  CHECK(!length.empty());
+  if ('0' <= length[0] && length[0] <= '9') {
+    return std::stoi(length);
+  } else if (length == "monometer") {
+    return 1;
+  } else if (length == "dimeter") {
+    return 2;
+  } else if (length == "trimeter") {
+    return 3;
+  } else if (length == "tetrameter") {
+    return 4;
+  } else if (length == "pentameter") {
+    return 5;
+  } else if (length == "hexameter") {
+    return 6;
+  } else if (length == "heptameter") {
+    return 7;
+  } else if (length == "octameter") {
+    return 8;
+  } else {
+    LOG(FATAL) << "Bad meter length: " << length;
+  }
+}
+
+const Meter MakeMeter(std::string sfoot, std::string slength) {
+  Meter res;
+  const Meter foot = ParseFoot(sfoot);
+  int length = ParseMeterLength(slength);
+  for (int n = 0; n < length; ++n) {
+    res.insert(res.end(), foot.begin(), foot.end());
+  }
+  return res;
+}
+
 std::string PhonemeString(Phoneme phoneme) {
   switch (phoneme) {
     case kAA: return "AA";

@@ -4,6 +4,7 @@
 #include <chrono>
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -22,11 +23,19 @@
 #include "poemy/pronounce.h"
 
 DEFINE_int32(lines, 30, "How many lines of poetry to generate.");
-DEFINE_int32(tries, 5, "How many times to crawl node before quitting.");
+DEFINE_int32(tries, 5, "How many times to crawl a node before trying next.");
+DEFINE_string(foot, "iambic", "Which type of foot do you want to use for your "
+              "poetry meter? Can be: iambic (01), trochaic (10), "
+              "anapestic (001), dactylic (100), or amphibrachic (010).");
+DEFINE_string(length, "pentameter", "How many feet per line? This can be an "
+              "integer or one of the following traditional names: "
+              "monometer (1), dimeter (2), trimeter (3), tetrameter (4), "
+              "pentameter (5), hexameter (6), heptameter (7), or "
+              "octameter (8)");
 DEFINE_string(corpora, "goth", "Comma-separated list of corpora to load.");
-DEFINE_string(corpora_path, "./corpora", "Path of corpus folders.");
+DEFINE_string(corpora_path, "./corpora", "Path where corpus folders live.");
 DEFINE_string(dict, "isle", "Which pronunciation dictionary to use? This can "
-              "either be 'isle' or 'cmu'");
+              "be 'isle' or 'cmu'");
 DEFINE_string(isledict_path, "./data/isledict/isledict0.2.txt",
               "Path of isledict.txt database file.");
 DEFINE_string(cmudict_path, "./data/cmudict.txt",
@@ -68,13 +77,13 @@ static int g_count_MakeLine = 0;
 
 bool MakeWord(int word1,
               int word2,
-              size_t pos,
+              size_t syllables,
               const Meter& meter,
               const Word* rhyme,
               VisitedSet* visited,
               vector<Word>* words) {
   ++g_count_MakeWord;
-  if (pos == meter.size()) {
+  if (syllables == meter.size()) {
     if (g_bad_end_words.find(word2) != g_bad_end_words.end()) {
       return false;
     }
@@ -98,16 +107,16 @@ bool MakeWord(int word1,
     if (prons.empty()) {
       continue;
     }
-    const Pronounce* pronounce = poemy::MatchMeter(prons, meter, pos);
+    const Pronounce* pronounce = poemy::MatchMeter(prons, meter, syllables);
     if (!pronounce) {
       continue;
     }
     words->emplace_back(word3, pronounce);
-    pos += pronounce->size();
-    if (MakeWord(word2, word3, pos, meter, rhyme, visited, words)) {
+    syllables += pronounce->size();
+    if (MakeWord(word2, word3, syllables, meter, rhyme, visited, words)) {
       return true;
     }
-    pos -= words->back().pronounce->size();
+    syllables -= words->back().pronounce->size();
     words->pop_back();
   }
   return false;
@@ -120,7 +129,7 @@ bool MakeLine(const Meter& meter, const Word* rhyme, vector<Word>* words) {
   for (int tries = 0; tries < FLAGS_tries; ++tries) {
     words->clear();
     visited.clear();
-    size_t pos = 0;
+    size_t syllables = 0;
     const Pronounce* pronounce1;
     const Pronounce* pronounce2;
     pair<int, int> first_words = g_chain.PickFirst();
@@ -130,19 +139,19 @@ bool MakeLine(const Meter& meter, const Word* rhyme, vector<Word>* words) {
       continue;
     }
     visited.insert({word1, word2});
-    pronounce1 = poemy::MatchMeter(g_dict->Speak(word1), meter, pos);
+    pronounce1 = poemy::MatchMeter(g_dict->Speak(word1), meter, syllables);
     if (!pronounce1) {
       continue;
     }
-    pos += pronounce1->size();
-    pronounce2 = poemy::MatchMeter(g_dict->Speak(word2), meter, pos);
+    syllables += pronounce1->size();
+    pronounce2 = poemy::MatchMeter(g_dict->Speak(word2), meter, syllables);
     if (!pronounce2) {
       continue;
     }
-    pos += pronounce2->size();
+    syllables += pronounce2->size();
     words->emplace_back(word1, pronounce1);
     words->emplace_back(word2, pronounce2);
-    if (MakeWord(word1, word2, pos, meter, rhyme, &visited, words)) {
+    if (MakeWord(word1, word2, syllables, meter, rhyme, &visited, words)) {
       return true;
     }
   }
@@ -163,6 +172,8 @@ void LoadWords(Set* out, const string& path) {
     }
   }
 }
+
+
 
 int main(int argc, char** argv) {
   google::SetUsageMessage(PACKAGE_NAME " [FLAGS]");
@@ -196,12 +207,10 @@ int main(int argc, char** argv) {
   }
   g_chain.LoadDone();
 
-  using std::chrono::duration_cast;
-  using std::chrono::high_resolution_clock;
-  auto begin = high_resolution_clock::now();
+  auto begin = std::chrono::high_resolution_clock::now();
 
   // poemy::util::CpuProfilerStart();
-  const Meter meter = {0, 1, 0, 1, 0, 1, 0, 1, 0, 1};
+  const Meter meter = poemy::MakeMeter(FLAGS_foot, FLAGS_length);
   int lines = 0;
   while (lines < FLAGS_lines) {
     vector<Word> line1;
@@ -222,9 +231,9 @@ int main(int argc, char** argv) {
   }
   // poemy::util::CpuProfilerStop();
 
-  auto end = high_resolution_clock::now();
-  auto elapsed = duration_cast<std::chrono::milliseconds>(end - begin);
-  auto lps = lines / (elapsed.count() / 1000.0);
+  auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+      std::chrono::high_resolution_clock::now() - begin);
+  auto lps = lines / (elapsed_ms.count() / 1000.0);
   LOG(INFO) << "g_count_MakeLine: " << g_count_MakeLine;
   LOG(INFO) << "g_count_MakeWord: " << g_count_MakeWord;
   LOG(INFO) << "lines per second " << lps;

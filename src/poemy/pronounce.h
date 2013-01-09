@@ -72,6 +72,9 @@ const Pronounce* MatchMeter(const Pronounces& prons, const Meter& meter,
                             size_t pos);
 std::string PhonemeString(Phoneme phoneme);
 Phoneme ParsePhoneme(const std::string& str);
+const Meter ParseFoot(std::string foot);
+int ParseMeterLength(std::string length);
+const Meter MakeMeter(std::string foot, std::string length);
 
 std::ostream& operator<<(std::ostream& os, const Phoneme& phoneme);
 std::ostream& operator<<(std::ostream& os, const Syllable& syl);
