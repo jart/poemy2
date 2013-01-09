@@ -173,8 +173,6 @@ void LoadWords(Set* out, const string& path) {
   }
 }
 
-
-
 int main(int argc, char** argv) {
   google::SetUsageMessage(PACKAGE_NAME " [FLAGS]");
   google::SetVersionString(VERSION);
@@ -238,7 +236,7 @@ int main(int argc, char** argv) {
   LOG(INFO) << "g_count_MakeWord: " << g_count_MakeWord;
   LOG(INFO) << "lines per second " << lps;
 
-  CHECK(system("pmap -x $(pidof poemy) | tail -n1 | awk '{print $4}'") == 0);
+  // CHECK(system("pmap -x $(pidof poemy) | tail -n1 | awk '{print $4}'") == 0);
 
   return 0;
 }
