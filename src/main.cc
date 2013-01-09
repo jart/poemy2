@@ -41,6 +41,7 @@ using poemy::Meter;
 using poemy::Pronounce;
 using poemy::Pronounces;
 using poemy::Syllable;
+using poemy::new_unique;
 using std::cout;
 using std::endl;
 using std::pair;

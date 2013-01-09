@@ -6,7 +6,7 @@
 #include <gtest/gtest.h>
 #include "poemy/unique.h"
 
-using poemy::Corpus;
+namespace poemy {
 
 TEST(CorpusTest, HelloKitty) {
   Corpus corp(new_unique<std::istringstream>("hello kitty"));
@@ -139,6 +139,8 @@ TEST(CorpusTest, DoubleLine) {
   EXPECT_EQ("there", corp.get());
   EXPECT_EQ("", corp.get());
 }
+
+}  // namespace poemy
 
 // For Emacs:
 // Local Variables:

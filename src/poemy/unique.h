@@ -7,12 +7,16 @@
 #include <memory>
 #include <utility>
 
+namespace poemy {
+
 // This is the proper way to express that you intend to pass ownershp of a
 // brand new pointer to another function.
 template<typename T, typename... Args>
 static inline std::unique_ptr<T> new_unique(Args&&... args) {
   return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 }
+
+}  // namespace poemy
 
 #endif  // POEMY_UNIQUE_H_
 
