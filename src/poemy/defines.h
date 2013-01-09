@@ -7,11 +7,9 @@
 #define POEMY_FRIEND_TEST(test_case_name, test_name)  \
   friend class test_case_name##_##test_name##_Test
 
-// A macro to disallow the copy constructor and operator= functions
-// This should be used in the private: declarations for a class.
 #define POEMY_DISALLOW_COPY_AND_ASSIGN(TypeName) \
-  TypeName(const TypeName&);                     \
-  void operator=(const TypeName&)
+  TypeName(const TypeName&) = delete;            \
+  void operator=(const TypeName&) = delete;
 
 // Manual branch prediction. Use -fprofile-arcs first.
 #ifdef __GNUC__

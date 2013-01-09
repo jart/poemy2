@@ -15,8 +15,7 @@ namespace poemy {
 class Cmudict : public Dict {
  public:
   Cmudict();
-  // I take ownership of 'input'.
-  virtual void Load(std::istream* input);
+  virtual void Load(std::unique_ptr<std::istream> input);
 
   virtual const Pronounces& Speak(int code) const override {
     static const Pronounces empty;

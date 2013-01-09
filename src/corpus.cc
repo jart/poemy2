@@ -7,7 +7,8 @@
 
 namespace poemy {
 
-Corpus::Corpus(std::istream* input) : input_(input), last_empty_(true) {
+Corpus::Corpus(std::unique_ptr<std::istream> input)
+    : input_(std::move(input)), last_empty_(true) {
   CHECK(input_->good());
 }
 

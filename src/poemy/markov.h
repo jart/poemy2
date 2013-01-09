@@ -4,6 +4,7 @@
 #ifndef POEMY_MARKOV_H_
 #define POEMY_MARKOV_H_
 
+#include <memory>
 #include <random>
 #include <string>
 #include <utility>
@@ -26,8 +27,7 @@ class Markov {
   typedef MurmurHash3<Key> Hasher;
 
   explicit Markov();
-  // I take ownership of 'corp'.
-  void Load(const Dict* dict, Corpus* corp);
+  void Load(const Dict* dict, std::unique_ptr<Corpus> corp);
   void LoadDone();
   Key PickFirst() const;
   const Value& Picks(Key words) const;

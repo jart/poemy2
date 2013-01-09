@@ -11,9 +11,8 @@ Isledict::Isledict() {
   codes_.set_empty_key("");
 }
 
-void Isledict::Load(std::istream* input) {
+void Isledict::Load(std::unique_ptr<std::istream> input) {
   Timeit timeit("Isledict::Load()");
-  std::unique_ptr<std::istream> free_input(input);
   PCHECK(input->good());
   std::string line, word;
   while (std::getline(*input, line).good()) {

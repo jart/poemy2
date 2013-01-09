@@ -11,9 +11,8 @@ Cmudict::Cmudict() {
   codes_.set_empty_key("");
 }
 
-void Cmudict::Load(std::istream* input) {
+void Cmudict::Load(std::unique_ptr<std::istream> input) {
   Timeit timeit("Cmudict::Load()");
-  std::unique_ptr<std::istream> free_input(input);
   PCHECK(input->good());
   std::string line, word;
   while (std::getline(*input, line).good()) {

@@ -7,6 +7,7 @@
 #include <sparsehash/sparse_hash_set>
 #include "poemy/cmudict.h"
 #include "poemy/corpus.h"
+#include "poemy/unique.h"
 
 #define C(word_string) dict.Code(word_string)
 
@@ -18,7 +19,7 @@ namespace poemy {
 
 TEST(MarkovTest, TheRaven) {
   Cmudict dict;
-  dict.Load(new std::istringstream(
+  dict.Load(new_unique<std::istringstream>(
       "ONCE  W AH1 N S\n"
       "UPON  AH0 P AA1 N\n"
       "A  AH0\n"
@@ -33,7 +34,7 @@ TEST(MarkovTest, TheRaven) {
       "AND(1)  AE1 N D\n"
       "WEARY  W IH1 R IY0\n"));
   Markov markov;
-  markov.Load(&dict, new Corpus(new std::istringstream(
+  markov.Load(&dict, new_unique<Corpus>(new_unique<std::istringstream>(
       "Once upon a midnight dreary, while I pondered, weak and weary,")));
   markov.LoadDone();
 

@@ -3,6 +3,7 @@
 
 #include "poemy/isledict.h"
 #include <gtest/gtest.h>
+#include "poemy/unique.h"
 
 using std::string;
 using std::vector;
@@ -71,7 +72,7 @@ TEST(IsledictTest, API) {
   for (const auto& vec : vectors) {
     data += vec.line + "\n";
   }
-  dict.Load(new std::istringstream(data));
+  dict.Load(new_unique<std::istringstream>(data));
   int code = 0;
   for (const auto& vec : vectors) {
     ASSERT_EQ(code, dict.Code(vec.word));

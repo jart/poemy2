@@ -17,6 +17,7 @@
 #include "poemy/isledict.h"
 #include "poemy/markov.h"
 #include "poemy/memoryfile.h"
+#include "poemy/unique.h"
 #include "poemy/util.h"
 #include "poemy/pronounce.h"
 
@@ -170,11 +171,11 @@ int main(int argc, char** argv) {
   google::InstallFailureSignalHandler();
 
   if (FLAGS_dict == "isle") {
-    g_dict.reset(new poemy::Isledict());
-    g_dict->Load(new std::ifstream(FLAGS_isledict_path));
+    g_dict = new_unique<poemy::Isledict>();
+    g_dict->Load(new_unique<std::ifstream>(FLAGS_isledict_path));
   } else if (FLAGS_dict == "cmu") {
-    g_dict.reset(new poemy::Cmudict());
-    g_dict->Load(new std::ifstream(FLAGS_cmudict_path));
+    g_dict = new_unique<poemy::Cmudict>();
+    g_dict->Load(new_unique<std::ifstream>(FLAGS_cmudict_path));
   } else {
     LOG(FATAL) << "Invalid word dict: " << FLAGS_dict;
   }
@@ -187,7 +188,9 @@ int main(int argc, char** argv) {
     for (const auto& entry : poemy::util::ListDir(corpus_path)) {
       string path(FLAGS_corpora_path + "/" + corpus + "/" + entry);
       LOG(INFO) << "loading: " << path;
-      g_chain.Load(g_dict.get(), new poemy::Corpus(new std::ifstream(path)));
+      g_chain.Load(g_dict.get(),
+                   new_unique<poemy::Corpus>(
+                       new_unique<std::ifstream>(path)));
     }
   }
   g_chain.LoadDone();

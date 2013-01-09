@@ -9,7 +9,7 @@ pronunciation dictionary.
 
 First you need to install some dependencies:
 
-- `sudo apt-get install clang pkg-config autoconf automake ragel`
+- `sudo apt-get install build-essential clang pkg-config autoconf automake ragel`
 - Google gflags: <http://code.google.com/p/gflags/>
 - Google glog: <http://code.google.com/p/google-glog/>
 - Google SparseHash: <http://code.google.com/p/sparsehash/>

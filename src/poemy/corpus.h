@@ -15,8 +15,7 @@ namespace poemy {
 // I'm responsible for turning raw corpus text into sentences and words.
 class Corpus {
  public:
-  // I take ownership of 'input'.
-  explicit Corpus(std::istream* input);
+  explicit Corpus(std::unique_ptr<std::istream> input);
   bool good() const { return input_->good(); }
   std::string get();
 

@@ -4,6 +4,7 @@
 #ifndef POEMY_DICT_H_
 #define POEMY_DICT_H_
 
+#include <memory>
 #include <istream>
 #include <string>
 
@@ -15,8 +16,7 @@ namespace poemy {
 class Dict {
  public:
   static const int kMissing = -1;
-  // I take ownership of 'input'.
-  virtual void Load(std::istream* input) = 0;
+  virtual void Load(std::unique_ptr<std::istream> input) = 0;
   virtual const Pronounces& Speak(int code) const = 0;
   virtual const std::string& Word(int code) const = 0;
   virtual int Code(const std::string& word) const = 0;

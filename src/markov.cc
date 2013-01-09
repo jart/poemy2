@@ -17,8 +17,7 @@ Markov::Markov()
   chain_.set_empty_key({-1, -1});
 }
 
-void Markov::Load(const Dict* dict, Corpus* corp) {
-  std::unique_ptr<Corpus> free_corp(corp);
+void Markov::Load(const Dict* dict, std::unique_ptr<Corpus> corp) {
   while (corp->good()) {
     int w1 = dict->Code(corp->get());
     if (w1 == -1) {

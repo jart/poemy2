@@ -4,11 +4,12 @@
 #include "poemy/corpus.h"
 #include <sstream>
 #include <gtest/gtest.h>
+#include "poemy/unique.h"
 
 using poemy::Corpus;
 
 TEST(CorpusTest, HelloKitty) {
-  Corpus corp(new std::istringstream("hello kitty"));
+  Corpus corp(new_unique<std::istringstream>("hello kitty"));
   EXPECT_TRUE(corp.good());
   EXPECT_EQ("hello", corp.get());
   EXPECT_TRUE(corp.good());
@@ -18,7 +19,7 @@ TEST(CorpusTest, HelloKitty) {
 }
 
 TEST(CorpusTest, MultiSentence) {
-  Corpus corp(new std::istringstream("hello kitty. i love you"));
+  Corpus corp(new_unique<std::istringstream>("hello kitty. i love you"));
   EXPECT_EQ("hello", corp.get());
   EXPECT_TRUE(corp.good());
   EXPECT_EQ("kitty", corp.get());
@@ -35,7 +36,7 @@ TEST(CorpusTest, MultiSentence) {
 }
 
 TEST(CorpusTest, MultiLine) {
-  Corpus corp(new std::istringstream("hello kitty...\n i love you"));
+  Corpus corp(new_unique<std::istringstream>("hello kitty...\n i love you"));
   EXPECT_EQ("hello", corp.get());
   EXPECT_TRUE(corp.good());
   EXPECT_EQ("kitty", corp.get());
@@ -52,14 +53,14 @@ TEST(CorpusTest, MultiLine) {
 }
 
 TEST(CorpusTest, ConvertToLowerCase) {
-  Corpus corp(new std::istringstream("HELLO KITTY"));
+  Corpus corp(new_unique<std::istringstream>("HELLO KITTY"));
   EXPECT_EQ("hello", corp.get());
   EXPECT_EQ("kitty", corp.get());
   EXPECT_EQ("", corp.get());
 }
 
 TEST(CorpusTest, IncludeApostrophe) {
-  Corpus corp(new std::istringstream("eat at joe's"));
+  Corpus corp(new_unique<std::istringstream>("eat at joe's"));
   EXPECT_EQ("eat", corp.get());
   EXPECT_EQ("at", corp.get());
   EXPECT_EQ("joe's", corp.get());
@@ -67,7 +68,7 @@ TEST(CorpusTest, IncludeApostrophe) {
 }
 
 TEST(CorpusTest, IncludeApostrophePrefix) {
-  Corpus corp(new std::istringstream("'Tis the wind"));
+  Corpus corp(new_unique<std::istringstream>("'Tis the wind"));
   EXPECT_EQ("'tis", corp.get());
   EXPECT_EQ("the", corp.get());
   EXPECT_EQ("wind", corp.get());
@@ -75,13 +76,13 @@ TEST(CorpusTest, IncludeApostrophePrefix) {
 }
 
 TEST(CorpusTest, HyphenMiddle) {
-  Corpus corp(new std::istringstream("lol-cat"));
+  Corpus corp(new_unique<std::istringstream>("lol-cat"));
   EXPECT_EQ("lol-cat", corp.get());
   EXPECT_EQ("", corp.get());
 }
 
 TEST(CorpusTest, NoEndHyphen) {
-  Corpus corp(new std::istringstream("lol- -cat -lol-cat-"));
+  Corpus corp(new_unique<std::istringstream>("lol- -cat -lol-cat-"));
   EXPECT_EQ("lol", corp.get());
   EXPECT_EQ("cat", corp.get());
   EXPECT_EQ("lol-cat", corp.get());
@@ -93,7 +94,7 @@ TEST(CorpusTest, BreakDash) {
       "Thrilled me--filled me",
       "Thrilled me---filled me",
       "Thrilled me----filled me"}) {
-    Corpus corp(new std::istringstream(str));
+    Corpus corp(new_unique<std::istringstream>(str));
     EXPECT_EQ("thrilled", corp.get()) << "Original: " << str;
     EXPECT_EQ("me", corp.get()) << "Original: " << str;
     EXPECT_EQ("filled", corp.get()) << "Original: " << str;
@@ -104,7 +105,7 @@ TEST(CorpusTest, BreakDash) {
 
 TEST(CorpusTest, DealWithQuotes) {
   std::string str = "\"Lenore!\" Merely this, and nothing more.";
-  Corpus corp(new std::istringstream(str));
+  Corpus corp(new_unique<std::istringstream>(str));
   EXPECT_EQ("lenore", corp.get());
   EXPECT_EQ("", corp.get());
   EXPECT_EQ("merely", corp.get());
@@ -117,7 +118,7 @@ TEST(CorpusTest, DealWithQuotes) {
 
 TEST(CorpusTest, DealWithQuotes2) {
   std::string str = "by a touch, \"you promised me!\" it said.";
-  Corpus corp(new std::istringstream(str));
+  Corpus corp(new_unique<std::istringstream>(str));
   EXPECT_EQ("by", corp.get());
   EXPECT_EQ("a", corp.get());
   EXPECT_EQ("touch", corp.get());
@@ -132,7 +133,7 @@ TEST(CorpusTest, DealWithQuotes2) {
 }
 
 TEST(CorpusTest, DoubleLine) {
-  Corpus corp(new std::istringstream("Hi.\n\n\nThere."));
+  Corpus corp(new_unique<std::istringstream>("Hi.\n\n\nThere."));
   EXPECT_EQ("hi", corp.get());
   EXPECT_EQ("", corp.get());
   EXPECT_EQ("there", corp.get());
