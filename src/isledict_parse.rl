@@ -14,7 +14,7 @@ namespace poemy {
   write data;
 }%%
 
-bool Isledict::Parse(const string& line, string* word, Pronounce *res) const {
+bool Isledict::Parse(const string& line, string* word, Pronounce* res) const {
   int cs;
   const char* f = &line.front();
   const char* p = f;
