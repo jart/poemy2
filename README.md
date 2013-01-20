@@ -11,12 +11,19 @@ To learn more about how poemy works, see the developers section at the bottom.
 
 First you need to install some dependencies:
 
-- `sudo apt-get install build-essential clang pkg-config autoconf automake ragel`
 - Google gflags: <http://code.google.com/p/gflags/>
 - Google glog: <http://code.google.com/p/google-glog/>
 - Google SparseHash: <http://code.google.com/p/sparsehash/>
 - Optional: libunwind: <http://www.nongnu.org/libunwind/>
 - Optional: Google gperftools: <http://code.google.com/p/gperftools/>
+
+The following commands have been provided for your convenience if they're not
+available in your package manager:
+
+    sudo apt-get install clang pkg-config autoconf automake ragel
+    sudo ./install-gflags.sh
+    sudo ./install-glog.sh
+    sudo ./install-sparsehash.sh
 
 Then build / install poemy as follows:
 
