@@ -25,7 +25,7 @@ static const int cmudict_en_main = 1;
 #line 17 "src/cmudict_parse.rl"
 
 
-bool Cmudict::Parse(const string& line, string* word, Pronounce *res) const {
+bool Cmudict::Parse(const string& line, string* word, Pronounce* res) const {
   int cs;
   const char* f = &line.front();
   const char* p = f;

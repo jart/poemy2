@@ -23,7 +23,7 @@ static const int isledict_en_main = 1;
 #line 15 "src/isledict_parse.rl"
 
 
-bool Isledict::Parse(const string& line, string* word, Pronounce *res) const {
+bool Isledict::Parse(const string& line, string* word, Pronounce* res) const {
   int cs;
   const char* f = &line.front();
   const char* p = f;
