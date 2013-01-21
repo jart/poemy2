@@ -23,11 +23,11 @@ PKG_CHECK_MODULES(LIBGFLAGS, libgflags)
 PKG_CHECK_MODULES(LIBGLOG, libglog)
 PKG_CHECK_MODULES(LIBSPARSEHASH, libsparsehash)
 PKG_CHECK_MODULES(LIBPROFILER, libprofiler,
-    [AC_DEFINE([HAVE_PROFILER], [true], [Is gperftools profiler enabled?])],
-    [AC_DEFINE([HAVE_PROFILER], [false], [Is gperftools profiler enabled?])])
+    [AC_DEFINE([HAVE_PROFILER], [1], [Is gperftools profiler enabled?])],
+    [AC_DEFINE([NO_PROFILER], [1], [Is gperftools profiler enabled?])])
 PKG_CHECK_MODULES(LIBTCMALLOC, libtcmalloc,
-    [AC_DEFINE([HAVE_TCMALLOC], [true], [Is gperftools tcmalloc enabled?])],
-    [AC_DEFINE([HAVE_TCMALLOC], [false], [Is gperftools tcmalloc enabled?])])
+    [AC_DEFINE([HAVE_TCMALLOC], [1], [Is gperftools tcmalloc enabled?])],
+    [AC_DEFINE([NO_TCMALLOC], [1], [Is gperftools tcmalloc enabled?])])
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

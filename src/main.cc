@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <random>
 #include <string>
 #include <vector>
 
@@ -74,15 +75,21 @@ static poemy::Markov g_chain;
 static std::unique_ptr<Dict> g_dict;
 static int g_count_MakeWord = 0;
 static int g_count_MakeLine = 0;
+static std::mt19937 g_random(
+    std::chrono::system_clock::now().time_since_epoch().count());
 
-bool MakeWord(int word1,
+bool MakeLine(int word1,
               int word2,
               size_t syllables,
               const Meter& meter,
               const Word* rhyme,
               VisitedSet* visited,
               vector<Word>* words) {
-  ++g_count_MakeWord;
+  if (syllables == 0) {
+    ++g_count_MakeLine;
+  } else {
+    ++g_count_MakeWord;
+  }
   if (syllables == meter.size()) {
     if (g_bad_end_words.find(word2) != g_bad_end_words.end()) {
       return false;
@@ -98,7 +105,14 @@ bool MakeWord(int word1,
     }
     return true;
   }
-  for (int word3 : g_chain.Picks({word1, word2})) {
+  const auto& picks = g_chain.Picks({word1, word2});
+  std::uniform_int_distribution<size_t> distrib(0, picks.size() - 1);
+  size_t tries = std::min(static_cast<size_t>(FLAGS_tries), picks.size());
+  for (size_t n = 0; n < tries; ++n) {
+    int word3 = picks[distrib(g_random)];
+    if (word3 == Dict::kSentinel) {
+      return false;
+    }
     if (visited->find({word2, word3}) != visited->end()) {
       continue;
     }
@@ -113,7 +127,7 @@ bool MakeWord(int word1,
     }
     words->emplace_back(word3, pronounce);
     syllables += pronounce->size();
-    if (MakeWord(word2, word3, syllables, meter, rhyme, visited, words)) {
+    if (MakeLine(word2, word3, syllables, meter, rhyme, visited, words)) {
       return true;
     }
     syllables -= words->back().pronounce->size();
@@ -122,46 +136,10 @@ bool MakeWord(int word1,
   return false;
 }
 
-bool MakeLine(const Meter& meter, const Word* rhyme, vector<Word>* words) {
-  ++g_count_MakeLine;
-  VisitedSet visited;
-  visited.set_empty_key({-1, -1});
-  for (int tries = 0; tries < FLAGS_tries; ++tries) {
-    words->clear();
-    visited.clear();
-    size_t syllables = 0;
-    const Pronounce* pronounce1;
-    const Pronounce* pronounce2;
-    pair<int, int> first_words = g_chain.PickFirst();
-    int word1 = first_words.first;
-    int word2 = first_words.second;
-    if (g_bad_start_words.find(word1) != g_bad_start_words.end()) {
-      continue;
-    }
-    visited.insert({word1, word2});
-    pronounce1 = poemy::MatchMeter(g_dict->Speak(word1), meter, syllables);
-    if (!pronounce1) {
-      continue;
-    }
-    syllables += pronounce1->size();
-    pronounce2 = poemy::MatchMeter(g_dict->Speak(word2), meter, syllables);
-    if (!pronounce2) {
-      continue;
-    }
-    syllables += pronounce2->size();
-    words->emplace_back(word1, pronounce1);
-    words->emplace_back(word2, pronounce2);
-    if (MakeWord(word1, word2, syllables, meter, rhyme, &visited, words)) {
-      return true;
-    }
-  }
-  return false;
-}
-
 void LoadWords(Set* out, const string& path) {
   std::ifstream input(path);
   PCHECK(input.good()) << path;
-  out->set_empty_key(-1);
+  out->set_empty_key(Dict::kMissing);
   string word;
   while (std::getline(input, word, '\n')) {
     if (!word.empty()) {
@@ -203,7 +181,6 @@ int main(int argc, char** argv) {
                        new_unique<std::ifstream>(path)));
     }
   }
-  g_chain.LoadDone();
 
   auto begin = std::chrono::high_resolution_clock::now();
 
@@ -213,8 +190,11 @@ int main(int argc, char** argv) {
   while (lines < FLAGS_lines) {
     vector<Word> line1;
     vector<Word> line2;
-    if (!MakeLine(meter, nullptr, &line1) ||
-        !MakeLine(meter, &line1.back(), &line2)) {
+    VisitedSet visited;
+    visited.set_empty_key({Dict::kMissing, Dict::kMissing});
+    const auto sen = Dict::kSentinel;
+    if (!MakeLine(sen, sen, 0, meter, nullptr,       &visited, &line1) ||
+        !MakeLine(sen, sen, 0, meter, &line1.back(), &visited, &line2)) {
       continue;
     }
     for (const Word& word : line1) {

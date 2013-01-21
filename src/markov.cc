@@ -3,6 +3,7 @@
 
 #include "poemy/markov.h"
 
+#include <algorithm>
 #include <chrono>
 #include <memory>
 
@@ -12,50 +13,27 @@
 
 namespace poemy {
 
-Markov::Markov()
-    : random_(std::chrono::system_clock::now().time_since_epoch().count()) {
-  chain_.set_empty_key({-1, -1});
+Markov::Markov() {
+  chain_.set_empty_key({Dict::kMissing, Dict::kMissing});
 }
 
 void Markov::Load(const Dict* dict, std::unique_ptr<Corpus> corp) {
+  int w1 = Dict::kSentinel;
+  int w2 = Dict::kSentinel;
+  int w3 = Dict::kSentinel;
   while (corp->good()) {
-    int w1 = dict->Code(corp->get());
-    if (w1 == -1) {
+    w3 = dict->Code(corp->get());
+    if (w3 == Dict::kMissing) {
+      w3 = Dict::kSentinel;
+      chain_[{w1, w2}].push_back(w3);
+      w1 = Dict::kSentinel;
+      w2 = Dict::kSentinel;
       continue;
     }
-    if (!corp->good()) {
-      break;
-    }
-    int w2 = dict->Code(corp->get());
-    if (w2 == -1) {
-      continue;
-    }
-    while (corp->good()) {
-      int w3 = dict->Code(corp->get());
-      if (w3 == -1) {
-        break;
-      }
-      chain_[{w1, w2}].emplace_back(w3);
-      w1 = w2;
-      w2 = w3;
-    }
+    chain_[{w1, w2}].push_back(w3);
+    w1 = w2;
+    w2 = w3;
   }
-}
-
-void Markov::LoadDone() {
-  CHECK(chain_.size() > 0) << "You need to actually load some data.";
-  keys_.clear();
-  keys_.reserve(chain_.size());
-  for (auto& ent : chain_) {
-    RemoveDuplicates(&ent.second);
-    std::random_shuffle(ent.second.begin(), ent.second.end());
-    keys_.emplace_back(ent.first.first, ent.first.second);
-  }
-}
-
-Markov::Key Markov::PickFirst() const {
-  std::uniform_int_distribution<size_t> distrib(0, keys_.size() - 1);
-  return keys_[distrib(random_)];
 }
 
 const Markov::Value& Markov::Picks(Markov::Key words) const {

@@ -20,7 +20,7 @@ First you need to install some dependencies:
 The following commands have been provided for your convenience if they're not
 available in your package manager:
 
-    sudo apt-get install clang pkg-config autoconf automake ragel
+    sudo apt-get install pkg-config autoconf automake ragel
     sudo ./install-gflags.sh
     sudo ./install-glog.sh
     sudo ./install-sparsehash.sh
@@ -28,9 +28,14 @@ available in your package manager:
 Then build / install poemy as follows:
 
     ./autogen.sh
-    CXX=clang++ ./configure
+    ./configure
     make
     make check
+
+Support for C++11 is still really goofy, especially since clang and GNU
+libstdc++ like to fight each other. If the commands above didn't work, you can
+also try installing clang and running `CXX=clang++ ./configure`. On other
+systems you might want to try running home to g++ with `CXX=g++ ./configure`.
 
 Here's some example invocations of poemy:
 

@@ -5,7 +5,6 @@
 #define POEMY_MARKOV_H_
 
 #include <memory>
-#include <random>
 #include <string>
 #include <utility>
 #include <vector>
@@ -28,14 +27,11 @@ class Markov {
 
   explicit Markov();
   void Load(const Dict* dict, std::unique_ptr<Corpus> corp);
-  void LoadDone();
-  Key PickFirst() const;
   const Value& Picks(Key words) const;
 
  private:
   google::dense_hash_map<Key, Value, Hasher> chain_;
   std::vector<Key> keys_;
-  mutable std::mt19937 random_;
   static const char kDelimiter = ',';
 
   static void RemoveDuplicates(Value* list);
