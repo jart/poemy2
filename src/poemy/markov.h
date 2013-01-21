@@ -28,13 +28,12 @@ class Markov {
   explicit Markov();
   void Load(const Dict* dict, std::unique_ptr<Corpus> corp);
   const Value& Picks(Key words) const;
+  void RemoveDuplicates();
 
  private:
   google::dense_hash_map<Key, Value, Hasher> chain_;
   std::vector<Key> keys_;
   static const char kDelimiter = ',';
-
-  static void RemoveDuplicates(Value* list);
 
   POEMY_DISALLOW_COPY_AND_ASSIGN(Markov);
 };

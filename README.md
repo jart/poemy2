@@ -16,6 +16,7 @@ First you need to install some dependencies:
 - Google SparseHash: <http://code.google.com/p/sparsehash/>
 - Optional: libunwind: <http://www.nongnu.org/libunwind/>
 - Optional: Google gperftools: <http://code.google.com/p/gperftools/>
+- Optional: Ragel State Machine Compiler: <http://www.complang.org/ragel/>
 
 The following commands have been provided for your convenience if they're not
 available in your package manager:

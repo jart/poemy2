@@ -25,12 +25,12 @@ void Markov::Load(const Dict* dict, std::unique_ptr<Corpus> corp) {
     w3 = dict->Code(corp->get());
     if (w3 == Dict::kMissing) {
       w3 = Dict::kSentinel;
-      chain_[{w1, w2}].push_back(w3);
+      chain_[{w1, w2}].emplace_back(w3);
       w1 = Dict::kSentinel;
       w2 = Dict::kSentinel;
       continue;
     }
-    chain_[{w1, w2}].push_back(w3);
+    chain_[{w1, w2}].emplace_back(w3);
     w1 = w2;
     w2 = w3;
   }
@@ -46,11 +46,14 @@ const Markov::Value& Markov::Picks(Markov::Key words) const {
   }
 }
 
-void Markov::RemoveDuplicates(Markov::Value* list) {
-  std::sort(list->begin(), list->end());
-  auto new_end = std::unique(list->begin(), list->end());
-  list->resize(new_end - list->begin());
-  list->shrink_to_fit();
+void Markov::RemoveDuplicates() {
+  for (auto& ent : chain_) {
+    auto& list = ent.second;
+    std::sort(list.begin(), list.end());
+    auto new_end = std::unique(list.begin(), list.end());
+    list.resize(new_end - list.begin());
+    list.shrink_to_fit();
+  }
 }
 
 }  // namespace poemy

@@ -181,6 +181,7 @@ int main(int argc, char** argv) {
                        new_unique<std::ifstream>(path)));
     }
   }
+  g_chain.RemoveDuplicates();
 
   auto begin = std::chrono::high_resolution_clock::now();
 
